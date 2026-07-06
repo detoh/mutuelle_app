@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block title %}État des Cotisations - Mutuelle Solidaire{% endblock %}
+
+{% block content %}
+<div class="page-header py-4 mb-4">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="mb-1"><i class="fas fa-file-invoice-dollar"></i> État des Cotisations</h1>
+                <p class="mb-0 opacity-75">Suivi par membre — Année {{ annee }}</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <form method="GET" class="d-inline-flex align-items-center gap-2">
+                    <input type="hidden" name="page" value="1">
+                    <input type="hidden" name="recherche" value="{{ recherche or '' }}">
+                    <input type="hidden" name="statut" value="{{ filtre_statut or '' }}">
+                    <label class="fw-semibold mb-0 small">Année</label>
+                    <select name="annee" class="form-select form-select-sm" style="width:auto" onchange="this.form.submit()">
+                        {% for a in range(annee - 3, annee + 1) %}
+                        <option value="{{ a }}" {% if a == annee %}selected{% endif %}>{{ a }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="card shadow-sm mb-3">
+        <div class="card-body py-3">
+            <form method="GET" class="row g-2 align-items-center">
+                <input type="hidden" name="annee" value="{{ annee }}">
+                <div class="col-md-5">
+                    <input type="text" name="recherche" class="form-control"
+                           placeholder="Rechercher..." value="{{ recherche or '' }}">
+                </div>
+                <div class="col-md-3">
+                    <select name="statut" class="form-select">
+                        <option value="" {% if not filtre_statut %}selected{% endif %}>Tous les statuts</option>
+                        <option value="À jour" {% if filtre_statut == 'À jour' %}selected{% endif %}>À jour</option>
+                        <option value="Pas à jour" {% if filtre_statut == 'Pas à jour' %}selected{% endif %}>Pas à jour</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter"></i> Filtrer
+                    </button>
+                </div>
+                <div class="col-md-2">
+                    <a href="{{ url_for('etat_cotisations', annee=annee) }}" class="btn btn-outline-secondary w-100">
+                        <i class="fas fa-times"></i> Réinitialiser
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold">
+                <i class="fas fa-list"></i> Détail par membre
+                <span class="text-muted fw-normal small">({{ total_membres }} au total)</span>
+            </h5>
+            <div>
+                <a href="{{ url_for('export_etat_cotisations_pdf', annee=annee) }}" class="btn btn-sm btn-outline-danger">
+                    <i class="fas fa-file-pdf"></i> PDF
+                </a>
+                <a href="{{ url_for('export_etat_cotisations_excel', annee=annee) }}" class="btn btn-sm btn-outline-success">
+                    <i class="fas fa-file-excel"></i> Excel
+                </a>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="py-3">Membre</th>
+                            <th class="py-3">Adhésion</th>
+                            {% for i in range(1, nb_echeances + 1) %}
+                            <th class="py-3 text-center">Éch. {{ i }}</th>
+                            {% endfor %}
+                            <th class="py-3 text-end">Payé</th>
+                            <th class="py-3 text-end">Attendu</th>
+                            <th class="py-3 text-end">Solde</th>
+                            <th class="py-3 text-center">Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in etat %}
+                        <tr>
+                            <td class="fw-semibold">{{ m.nom }} {{ m.prenom }}</td>
+                            <td>{{ m.date_adhesion }}</td>
+                            {% for p in m.periodes %}
+                            <td class="text-center">
+                                {% if p.payee %}
+                                <i class="fas fa-check-circle text-success"></i>
+                                {% else %}
+                                <i class="fas fa-times-circle text-danger"></i>
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                            <td class="text-end">{{ "{:,.0f}".format(m.total_paye) }}</td>
+                            <td class="text-end">{{ "{:,.0f}".format(m.total_attendu) }}</td>
+                            <td class="text-end {{ 'text-danger fw-bold' if m.solde < 0 else 'text-success' }}">
+                                {{ "{:,.0f}".format(m.solde) }}
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-{{ 'success' if m.statut == 'À jour' else 'danger' }}">
+                                    {{ m.statut }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {% if total_pages > 1 %}
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            <small class="text-muted">
+                Page {{ page }} sur {{ total_pages }}
+            </small>
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item {{ 'disabled' if page <= 1 }}">
+                        <a class="page-link" href="{{ url_for('etat_cotisations', annee=annee, page=page-1, recherche=recherche, statut=filtre_statut) }}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% for p in range(1, total_pages + 1) %}
+                        {% if p == 1 or p == total_pages or (p >= page - 2 and p <= page + 2) %}
+                        <li class="page-item {{ 'active' if p == page }}">
+                            <a class="page-link" href="{{ url_for('etat_cotisations', annee=annee, page=p, recherche=recherche, statut=filtre_statut) }}">{{ p }}</a>
+                        </li>
+                        {% elif p == page - 3 or p == page + 3 %}
+                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                        {% endif %}
+                    {% endfor %}
+                    <li class="page-item {{ 'disabled' if page >= total_pages }}">
+                        <a class="page-link" href="{{ url_for('etat_cotisations', annee=annee, page=page+1, recherche=recherche, statut=filtre_statut) }}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

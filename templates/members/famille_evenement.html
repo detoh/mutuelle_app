@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card shadow">
+  <div class="card-header bg-primary text-white">
+    <h5 class="mb-0">📋 Déclarer un événement familial</h5>
+  </div>
+  <div class="card-body">
+    
+    {% if info_unicite %}
+    <div class="alert alert-info">
+      <i class="fas fa-info-circle"></i> {{ info_unicite }}
+    </div>
+    {% endif %}
+    
+    <form method="POST" enctype="multipart/form-data">
+      {{ csrf_token() }} 
+      <!-- Type d'événement -->
+      <div class="mb-3">
+        <label class="form-label">Type d'événement *</label>
+        <select name="type_evenement" class="form-select" required>
+          <option value="">-- Sélectionner --</option>
+          {% for t in types_possibles %}
+          <option value="{{ t }}">
+            {{ '🪦 Décès' if t == 'Deces' else '👶 Naissance' if t == 'Naissance' else '💍 Mariage' }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      
+      <!-- Date de l'événement -->
+      <div class="mb-3">
+        <label class="form-label">Date de l'événement *</label>
+        <input type="date" name="date_evenement" class="form-control" required 
+               max="{{ today.strftime('%Y-%m-%d') }}">
+      </div>
+      
+      <!-- Pièce justificative -->
+      <div class="mb-3">
+        <label class="form-label">Pièce justificative (acte)</label>
+        <input type="file" name="piece_justificative" class="form-control" 
+               accept=".pdf,.jpg,.jpeg,.png">
+        <small class="text-muted">Acte de décès, de naissance ou de mariage</small>
+      </div>
+      
+      <!-- Notes -->
+      <div class="mb-3">
+        <label class="form-label">Notes complémentaires</label>
+        <textarea name="notes" class="form-control" rows="3"></textarea>
+      </div>
+      
+      <button type="submit" class="btn btn-success">
+        <i class="fas fa-paper-plane"></i> Soumettre la demande
+      </button>
+      <a href="{{ url_for('mon_compte') }}" class="btn btn-secondary">Annuler</a>
+    </form>
+    
+  </div>
+</div>
+{% endblock %}

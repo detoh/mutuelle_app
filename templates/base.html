@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Mutuelle Solidaire{% endblock %}</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js pour les graphiques -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #27ae60;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card {
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .stat-card.success {
+            border-left-color: var(--accent-color);
+        }
+        
+        .stat-card.danger {
+            border-left-color: #e74c3c;
+        }
+        
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        
+        .btn-success {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+        
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 30px;
+            border-radius: 0 0 20px 20px;
+        }
+        #editMemberModal .modal-content {
+        border-radius: 15px;
+        border: none;
+        }
+         #editMemberModal .modal-header {
+        border-radius: 15px 15px 0 0;
+        }
+        #editMemberModal .form-control:focus {
+        border-color: #ffc107;
+        box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+        }
+        .transaction-row {
+        transition: background-color 0.2s;
+    }
+    .transaction-row:hover {
+        background-color: #f8f9fa;
+    }
+    .badge-type {
+        min-width: 30px;
+        text-align: center;
+    }
+    .amount-positive {
+        color: #198754;
+        font-weight: 600;
+    }
+    .amount-negative {
+        color: #dc3545;
+        font-weight: 600;
+    }
+    
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" style="height: 40px; margin-right: 10px; vertical-align: middle;">
+                <span style="vertical-align: middle; font-weight: bold;">Mutuelle Solidaire</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('dashboard') }}">
+                                <i class="fas fa-tachometer-alt"></i> Tableau de bord
+                            </a>
+                        </li>
+                        
+                        {% if current_user.is_admin %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-users-cog"></i> Gestion
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{{ url_for('liste_membres') }}">Membres</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('ajouter_cotisation') }}">Cotisations</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('ajouter_don') }}">Donations</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('ajouter_aide') }}">Aides Sociales</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('liste_evenements') }}" >Liste des evenements</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('admin_assistances') }}">Gestion Assistances </a></li>                                   
+                                    <li><a class="dropdown-item" href="{{ url_for('liste_projets') }}">Liste Projets</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('rapports') }}">Rapports</a></li>
+                                </ul>
+                            </li>
+                        {% endif %}
+                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('mon_compte') }}">
+                                <i class="fas fa-user"></i> Mon Compte
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('logout') }}">
+                                <i class="fas fa-sign-out-alt"></i> Déconnexion
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('login') }}">
+                                <i class="fas fa-sign-in-alt"></i> Connexion
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('register') }}">
+                                <i class="fas fa-user-plus"></i> Inscription
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    <!-- Dans base.html, menu de navigation -->
+
+        {% if current_user.is_admin or current_user.is_comptable %}
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle decalage-compta" style="transform: translateX(-20px); "href="#" id="comptableDropdown" 
+            role="button" data-bs-toggle="dropdown">
+                <i class="fas fa-calculator"></i> Comptabilité
+            </a>
+            <ul class="dropdown-menu">
+                <li>
+                    <a class="dropdown-item" href="{{ url_for('dashboard_comptable') }}">
+                        <i class="fas fa-tachometer-alt"></i> Tableau de Bord
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="{{ url_for('transactions_comptable') }}">
+                        <i class="fas fa-list"></i> Transactions
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="{{ url_for('rapports_comptable') }}">
+                        <i class="fas fa-file-invoice"></i> Rapports
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="{{ url_for('etat_cotisations') }}">
+                        <i class="fas fa-file-invoice"></i> Etat_Cotisations
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="{{ url_for('liste_aides') }}">
+                        <i class="fas fa-file-invoice"></i>Aides Accordéess
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <a class="dropdown-item" href="{{ url_for('liste_membres') }}">
+                        <i class="fas fa-users"></i> Membres
+                    </a>
+                    <a class="dropdown-item" href="{{ url_for('membres_en_retard') }}">
+                        <i class="fas fa-hourglass-start"></i>Membres en retard
+                    </a>
+                       
+                    <a class="dropdown-item" href="{{ url_for('cloture_exercice') }}">
+                        <i class="fa-regular fa-calendar-check"></i>Clôture exercice
+                    </a>
+                </li>
+            </ul>
+        </li>
+        {% endif %}    
+    </nav>
+
+    <!-- Messages Flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mt-3">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        <i class="fas fa-info-circle"></i> {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Contenu Principal -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><i class="fas fa-hands-helping"></i> Mutuelle Solidaire pour Tous</h5>
+                    <p>Ensemble pour un avenir meilleur. Gestion transparente et solidaire.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Liens Utiles</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('index') }}" class="text-white">Accueil</a></li>
+                        <li><a href="{{ url_for('login') }}" class="text-white">Connexion</a></li>
+                        <li><a href="#" class="text-white">Nous Contacter</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Nos Contacts</h5>
+                    <p><i class="fas fa-envelope"></i>patrickdetoh@gmail.com</p>
+                    <p><i class="fas fa-phone"></i>(+225) 0707238364 / 0504730721</p>
+                </div>
+            </div>
+            <hr class="bg-white">
+            <div class="text-center">
+                <p>&copy; 2026 Mutuelle Solidaire. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+    <!-- Bootstrap 5 JS -->
+       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+      
+</body>
+</html>

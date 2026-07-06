@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Enregistrer un Don - Mutuelle Solidaire{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg">
+                <div class="card-header bg-warning text-dark py-3">
+                    <h4 class="mb-0">
+                        <i class="fas fa-gift"></i> Enregistrer un Don
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('ajouter_don') }}">
+                       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <div class="mb-3">
+                            <label for="donateur_nom" class="form-label fw-bold">
+                                <i class="fas fa-user"></i> Nom du Donateur *
+                            </label>
+                            <input type="text" name="donateur_nom" class="form-control" 
+                                   placeholder="Nom de la personne ou organisation" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="montant" class="form-label fw-bold">
+                                <i class="fas fa-euro-sign"></i> Montant (FCFA ) *
+                            </label>
+                            <input type="number" name="montant" class="form-control" 
+                                   placeholder="0.00" step="0.01" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="date" class="form-label fw-bold">
+                                <i class="fas fa-calendar"></i> Date du Don *
+                            </label>
+                            <input type="date" name="date" class="form-control" 
+                                   value="{{ now().strftime('%Y-%m-%d') }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="statut" class="form-label fw-bold">Statut du don</label>
+                            <select class="form-select" id="statut" name="statut" required>
+                                <option value="true" selected>✅ Reçu (Validé en caisse)</option>
+                                <option value="false">⏳ En attente (Promesse de don)</option>
+                            </select>
+                            <div class="form-text">Seuls les dons "Reçus" seront ajoutés au solde de la caisse.</div>
+                        </div>
+                        
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle"></i>
+                            <strong>Merci !</strong> Les dons aident à renforcer la caisse de la mutuelle.
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-warning btn-lg">
+                                <i class="fas fa-save"></i> Enregistrer le Don
+                            </button>
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Retour au Tableau de Bord
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

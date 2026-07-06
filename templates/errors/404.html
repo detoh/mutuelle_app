@@ -1,0 +1,16 @@
+<!-- templates/errors/404.html -->
+{% extends "base.html" %}
+
+{% block title %}Page Non Trouvée - 404{% endblock %}
+
+{% block content %}
+<div class="container text-center mt-5">
+    <i class="fas fa-exclamation-triangle fa-5x text-warning mb-4"></i>
+    <h1 class="display-1 fw-bold">404</h1>
+    <h2 class="mb-4">Page Non Trouvée</h2>
+    <p class="lead text-muted mb-4">La page que vous recherchez n'existe pas.</p>
+    <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg">
+        <i class="fas fa-home"></i> Retour à l'Accueil
+    </a>
+</div>
+{% endblock %}

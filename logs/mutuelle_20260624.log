@@ -1,0 +1,89 @@
+2026-06-24 14:31:46,323 - __main__ - INFO - ============================================================
+2026-06-24 14:31:46,323 - __main__ - INFO - 🚀 MUTUELLE SOLIDAIRE - PRODUCTION
+2026-06-24 14:31:46,324 - __main__ - INFO - ============================================================
+2026-06-24 14:31:46,325 - __main__ - INFO - 📁 Dossier: C:\mutuelle_app
+2026-06-24 14:31:46,325 - __main__ - INFO - 🌐 URL: http://0.0.0.0:8000
+2026-06-24 14:31:46,325 - __main__ - INFO - 🧵 Threads: 4
+2026-06-24 14:31:46,325 - __main__ - INFO - 🔗 Connections: 100
+2026-06-24 14:31:46,325 - __main__ - INFO - ============================================================
+2026-06-24 14:31:46,478 - waitress - INFO - Serving on http://0.0.0.0:8000
+2026-06-24 14:49:44,307 - app - ERROR - Exception on /login [POST]
+Traceback (most recent call last):
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 1455, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 869, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 867, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 852, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\mutuelle_app\app.py", line 106, in login
+    if user and user.check_password(form.password.data):
+                ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\mutuelle_app\models.py", line 39, in check_password
+    return check_password_hash(self.password_hash, p)
+  File "C:\mutuelle_app\venv\Lib\site-packages\werkzeug\security.py", line 120, in check_password_hash
+    method, salt, hashval = pwhash.split("$", 2)
+                            ^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'split'
+2026-06-24 14:50:02,626 - app - ERROR - Exception on /login [POST]
+Traceback (most recent call last):
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 1455, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 869, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 867, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 852, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\mutuelle_app\app.py", line 106, in login
+    if user and user.check_password(form.password.data):
+                ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\mutuelle_app\models.py", line 39, in check_password
+    return check_password_hash(self.password_hash, p)
+  File "C:\mutuelle_app\venv\Lib\site-packages\werkzeug\security.py", line 120, in check_password_hash
+    method, salt, hashval = pwhash.split("$", 2)
+                            ^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'split'
+2026-06-24 14:50:05,595 - app - ERROR - Exception on /login [POST]
+Traceback (most recent call last):
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 1455, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 869, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 867, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 852, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\mutuelle_app\app.py", line 106, in login
+    if user and user.check_password(form.password.data):
+                ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\mutuelle_app\models.py", line 39, in check_password
+    return check_password_hash(self.password_hash, p)
+  File "C:\mutuelle_app\venv\Lib\site-packages\werkzeug\security.py", line 120, in check_password_hash
+    method, salt, hashval = pwhash.split("$", 2)
+                            ^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'split'
+2026-06-24 14:51:08,370 - app - ERROR - Exception on /login [POST]
+Traceback (most recent call last):
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 1455, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 869, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 867, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 852, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\mutuelle_app\app.py", line 106, in login
+    if user and user.check_password(form.password.data):
+                ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\mutuelle_app\models.py", line 39, in check_password
+    return check_password_hash(self.password_hash, p)
+  File "C:\mutuelle_app\venv\Lib\site-packages\werkzeug\security.py", line 120, in check_password_hash
+    method, salt, hashval = pwhash.split("$", 2)
+                            ^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'split'

@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Enregistrer Cotisation - Mutuelle Solidaire{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg">
+                <div class="card-header bg-success text-white py-3">
+                    <h4 class="mb-0">
+                        <i class="fas fa-coins"></i> Enregistrer une Cotisation
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            <label for="membre_id" class="form-label fw-bold">
+                                <i class="fas fa-user"></i> Membre *
+                            </label>
+                            {{ form.membre_id(class="form-select") }}
+                            {% for error in form.membre_id.errors %}
+                             <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="type_cotisation" class="form-label fw-bold">
+                                <i class="fas fa-tag"></i> Type de Cotisation *
+                            </label>
+                            {{ form.type_cotisation(class="form-select") }}
+                            {% for error in form.type_cotisation.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="montant" class="form-label fw-bold">
+                                <i class="fas fa-coins"></i> Montant (FCFA) *
+                            </label>
+                            {{ form.montant(class="form-control", placeholder="0.00", step="0.01") }}
+                            {% for error in form.montant.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="date_paiement" class="form-label fw-bold">
+                                <i class="fas fa-calendar"></i> Date de paiement *
+                            </label>
+                            {{ form.date_paiement(class="form-control", placeholder="Ex: 01/01/2024") }}
+                            {% for error in form.date_paiement.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+                            <small class="text-muted">Format : JJ/MM/AAAA</small>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Note :</strong> Un email de confirmation sera envoyé au membre.
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-success btn-lg") }}
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Retour au Tableau de Bord
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Infos Rapides -->
+            <div class="card mt-4 bg-light">
+                <div class="card-body">
+                    <h6 class="fw-bold"><i class="fas fa-lightbulb text-warning"></i> Types de Cotisations</h6>
+                    <ul class="mb-0 small text-muted">
+                        <li><strong>Adhésion :</strong> Paiement unique à l'inscription</li>
+                        <li><strong>Mensuelle :</strong> Cotisation régulière chaque mois</li>
+                        <li><strong>Exceptionnelle :</strong> Contribution spéciale (événements, projets)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

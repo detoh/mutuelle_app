@@ -1,0 +1,22 @@
+{% extends "emails/base.html" %}
+
+{% block content %}
+<h2>Nouvelle Demande d'Aide 🔔</h2>
+
+<p>Bonjour,</p>
+
+<p>Une nouvelle demande d'aide a été soumise et nécessite votre validation.</p>
+
+<div class="info-box" style="border-left-color: #e74c3c;">
+    <h3>Détails de la demande :</h3>
+    <p><strong>Demandeur :</strong> {{ aide_request.membre.nom }} {{ aide_request.membre.prenom }}</p>
+    <p><strong>Email :</strong> {{ aide_request.membre.email }}</p>
+    <p><strong>Type :</strong> {{ aide_request.type_aide }}</p>
+    <p><strong>Montant :</strong> {{ "%.2f"|format(aide_request.montant) }} €</p>
+    <p><strong>Motif :</strong> {{ aide_request.description }}</p>
+</div>
+
+<a href="http://127.0.0.1:5000/dashboard" class="button">Examiner la demande</a>
+
+<p>Cordialement,<br>La Mutuelle Solidaire</p>
+{% endblock %}

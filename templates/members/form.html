@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}{{ titre }} - Mutuelle Solidaire{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white py-3">
+                    <h4 class="mb-0"><i class="fas fa-user-edit"></i> {{ titre }}</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold"><i class="fas fa-user"></i> Nom *</label>
+                                <input type="text" name="nom" class="form-control" 
+                                       value="{{ membre.nom if membre and membre.nom else '' }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold"><i class="fas fa-user"></i> Prénom *</label>
+                                <input type="text" name="prenom" class="form-control" 
+                                       value="{{ membre.prenom if membre and membre.prenom else '' }}" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fas fa-envelope"></i> Email *</label>
+                            <input type="email" name="email" class="form-control" 
+                                   value="{{ membre.email if membre and membre.email else '' }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fas fa-phone"></i> Téléphone</label>
+                            <input type="text" name="telephone" class="form-control" 
+                                   value="{{ membre.telephone if membre and membre.telephone else '' }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fas fa-briefcase"></i> Fonction</label>
+                            <input type="text" name="fonction" class="form-control" 
+                                   value="{{ membre.fonction if membre and membre.fonction else '' }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fas fa-building"></i> Service</label>
+                            <input type="text" name="service" class="form-control" 
+                                   value="{{ membre.service if membre and membre.service else '' }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fas fa-id-badge"></i> Emploi</label>
+                            <input type="text" name="emploi" class="form-control" 
+                                   value="{{ membre.emploi if membre and membre.emploi else '' }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fas fa-calendar"></i> Date d'Adhésion *</label>
+                            <input type="date" name="date_adhesion" class="form-control" 
+                                   value="{{ membre.date_adhesion if membre and membre.date_adhesion else '' }}" required>
+                        </div>
+
+                        {% if membre %}
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fas fa-lock"></i> Mot de passe</label>
+                            <input type="password" name="password" class="form-control">
+                            <small class="text-muted">Laissez vide pour conserver le mot de passe actuel</small>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            Un mot de passe temporaire sera généré automatiquement et envoyé par email au nouveau membre.
+                        </div>
+                        {% endif %}
+
+                        {% if membre and membre.photo %}
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fas fa-image"></i> Photo Actuelle</label>
+                            <img src="{{ url_for('static', filename=membre.photo) }}" 
+                                 alt="Photo" class="rounded" style="max-width: 150px;">
+                        </div>
+                        {% endif %}
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold"><i class="fas fa-camera"></i> Nouvelle Photo</label>
+                            <input type="file" name="photo" class="form-control" accept="image/*">
+                        </div>
+
+                        {% if current_user.is_admin and membre %}
+                        <div class="mb-4">
+                            <label class="form-label fw-bold"><i class="fas fa-shield-alt"></i> Rôles</label>
+                            <div class="card bg-light p-3">
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" 
+                                           name="is_admin" id="is_admin" 
+                                           {% if membre.is_admin %}checked{% endif %}>
+                                    <label class="form-check-label fw-bold" for="is_admin">
+                                        <i class="fas fa-user-shield text-primary"></i> Administrateur
+                                    </label>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" 
+                                           name="is_comptable" id="is_comptable" 
+                                           {% if membre.is_comptable %}checked{% endif %}>
+                                    <label class="form-check-label fw-bold" for="is_comptable">
+                                        <i class="fas fa-calculator text-info"></i> Comptable
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save"></i> Enregistrer
+                            </button>
+                            <a href="{{ url_for('liste_membres') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Retour
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

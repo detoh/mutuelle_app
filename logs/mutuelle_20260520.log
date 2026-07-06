@@ -1,0 +1,138 @@
+2026-05-20 14:07:23,757 - __main__ - INFO - ============================================================
+2026-05-20 14:07:23,757 - __main__ - INFO - 🚀 MUTUELLE SOLIDAIRE - PRODUCTION
+2026-05-20 14:07:23,757 - __main__ - INFO - ============================================================
+2026-05-20 14:07:23,758 - __main__ - INFO - 📁 Dossier: C:\mutuelle_app
+2026-05-20 14:07:23,758 - __main__ - INFO - 🌐 URL: http://0.0.0.0:8000
+2026-05-20 14:07:23,758 - __main__ - INFO - 🧵 Threads: 4
+2026-05-20 14:07:23,759 - __main__ - INFO - 🔗 Connections: 100
+2026-05-20 14:07:23,759 - __main__ - INFO - ============================================================
+2026-05-20 14:07:23,769 - waitress - INFO - Serving on http://0.0.0.0:8000
+2026-05-20 14:13:48,217 - app - ERROR - Exception on /mon_compte [GET]
+Traceback (most recent call last):
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 1455, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 869, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 867, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 852, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\mutuelle_app\app.py", line 234, in mon_compte
+    return render_template('members/mon_compte.html',
+                           total_paye=cotisations_payees,
+                           total_aides=aides_recues,
+                           historique=historique_cotisations)
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\templating.py", line 152, in render_template
+    return _render(app, template, context)
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\templating.py", line 133, in _render
+    rv = template.render(context)
+  File "C:\mutuelle_app\venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\mutuelle_app\venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\mutuelle_app\templates\members\mon_compte.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "C:\mutuelle_app\templates\base.html", line 229, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^
+  File "C:\mutuelle_app\templates\members\mon_compte.html", line 39, in block 'content'
+    <i class="fas fa-calendar"></i> Membre depuis {{ current_user.date_adhesion.strftime('%d/%m/%Y') }}
+    
+  File "C:\mutuelle_app\venv\Lib\site-packages\jinja2\utils.py", line 92, in from_obj
+    if hasattr(obj, "jinja_pass_arg"):
+       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'str object' has no attribute 'strftime'
+2026-05-20 15:01:25,328 - __main__ - INFO - ============================================================
+2026-05-20 15:01:25,328 - __main__ - INFO - 🚀 MUTUELLE SOLIDAIRE - PRODUCTION
+2026-05-20 15:01:25,328 - __main__ - INFO - ============================================================
+2026-05-20 15:01:25,328 - __main__ - INFO - 📁 Dossier: C:\mutuelle_app
+2026-05-20 15:01:25,329 - __main__ - INFO - 🌐 URL: http://0.0.0.0:8000
+2026-05-20 15:01:25,329 - __main__ - INFO - 🧵 Threads: 4
+2026-05-20 15:01:25,329 - __main__ - INFO - 🔗 Connections: 100
+2026-05-20 15:01:25,329 - __main__ - INFO - ============================================================
+2026-05-20 15:01:25,334 - waitress - INFO - Serving on http://0.0.0.0:8000
+2026-05-20 15:07:43,414 - __main__ - INFO - ============================================================
+2026-05-20 15:07:43,414 - __main__ - INFO - 🚀 MUTUELLE SOLIDAIRE - PRODUCTION
+2026-05-20 15:07:43,415 - __main__ - INFO - ============================================================
+2026-05-20 15:07:43,415 - __main__ - INFO - 📁 Dossier: C:\mutuelle_app
+2026-05-20 15:07:43,415 - __main__ - INFO - 🌐 URL: http://0.0.0.0:8000
+2026-05-20 15:07:43,415 - __main__ - INFO - 🧵 Threads: 4
+2026-05-20 15:07:43,415 - __main__ - INFO - 🔗 Connections: 100
+2026-05-20 15:07:43,416 - __main__ - INFO - ============================================================
+2026-05-20 15:07:43,421 - waitress - INFO - Serving on http://0.0.0.0:8000
+2026-05-20 15:32:29,498 - __main__ - INFO - ============================================================
+2026-05-20 15:32:29,498 - __main__ - INFO - 🚀 MUTUELLE SOLIDAIRE - PRODUCTION
+2026-05-20 15:32:29,499 - __main__ - INFO - ============================================================
+2026-05-20 15:32:29,499 - __main__ - INFO - 📁 Dossier: C:\mutuelle_app
+2026-05-20 15:32:29,499 - __main__ - INFO - 🌐 URL: http://0.0.0.0:8000
+2026-05-20 15:32:29,499 - __main__ - INFO - 🧵 Threads: 4
+2026-05-20 15:32:29,499 - __main__ - INFO - 🔗 Connections: 100
+2026-05-20 15:32:29,500 - __main__ - INFO - ============================================================
+2026-05-20 15:32:29,506 - waitress - INFO - Serving on http://0.0.0.0:8000
+2026-05-20 16:56:29,614 - __main__ - INFO - ============================================================
+2026-05-20 16:56:29,614 - __main__ - INFO - 🚀 MUTUELLE SOLIDAIRE - PRODUCTION
+2026-05-20 16:56:29,614 - __main__ - INFO - ============================================================
+2026-05-20 16:56:29,614 - __main__ - INFO - 📁 Dossier: C:\mutuelle_app
+2026-05-20 16:56:29,615 - __main__ - INFO - 🌐 URL: http://0.0.0.0:8000
+2026-05-20 16:56:29,615 - __main__ - INFO - 🧵 Threads: 4
+2026-05-20 16:56:29,615 - __main__ - INFO - 🔗 Connections: 100
+2026-05-20 16:56:29,615 - __main__ - INFO - ============================================================
+2026-05-20 16:56:29,622 - waitress - INFO - Serving on http://0.0.0.0:8000
+2026-05-20 18:38:07,988 - __main__ - INFO - ============================================================
+2026-05-20 18:38:07,989 - __main__ - INFO - 🚀 MUTUELLE SOLIDAIRE - PRODUCTION
+2026-05-20 18:38:07,990 - __main__ - INFO - ============================================================
+2026-05-20 18:38:07,990 - __main__ - INFO - 📁 Dossier: C:\mutuelle_app
+2026-05-20 18:38:07,991 - __main__ - INFO - 🌐 URL: http://0.0.0.0:8000
+2026-05-20 18:38:07,991 - __main__ - INFO - 🧵 Threads: 4
+2026-05-20 18:38:07,991 - __main__ - INFO - 🔗 Connections: 100
+2026-05-20 18:38:07,991 - __main__ - INFO - ============================================================
+2026-05-20 18:38:08,000 - waitress - INFO - Serving on http://0.0.0.0:8000
+2026-05-20 18:44:35,109 - flask_wtf.csrf - INFO - The CSRF session token is missing.
+2026-05-20 18:45:49,340 - flask_wtf.csrf - INFO - The CSRF session token is missing.
+2026-05-20 18:56:22,364 - flask_wtf.csrf - INFO - The CSRF session token is missing.
+2026-05-20 18:57:23,877 - flask_wtf.csrf - INFO - The CSRF session token is missing.
+2026-05-20 19:12:31,037 - __main__ - INFO - ============================================================
+2026-05-20 19:12:31,038 - __main__ - INFO - 🚀 MUTUELLE SOLIDAIRE - PRODUCTION
+2026-05-20 19:12:31,038 - __main__ - INFO - ============================================================
+2026-05-20 19:12:31,038 - __main__ - INFO - 📁 Dossier: C:\mutuelle_app
+2026-05-20 19:12:31,038 - __main__ - INFO - 🌐 URL: http://0.0.0.0:8000
+2026-05-20 19:12:31,039 - __main__ - INFO - 🧵 Threads: 4
+2026-05-20 19:12:31,039 - __main__ - INFO - 🔗 Connections: 100
+2026-05-20 19:12:31,039 - __main__ - INFO - ============================================================
+2026-05-20 19:12:31,044 - waitress - INFO - Serving on http://0.0.0.0:8000
+2026-05-20 19:19:49,772 - flask_wtf.csrf - INFO - The CSRF session token is missing.
+2026-05-20 20:02:21,891 - __main__ - INFO - ============================================================
+2026-05-20 20:02:21,892 - __main__ - INFO - 🚀 MUTUELLE SOLIDAIRE - PRODUCTION
+2026-05-20 20:02:21,892 - __main__ - INFO - ============================================================
+2026-05-20 20:02:21,892 - __main__ - INFO - 📁 Dossier: C:\mutuelle_app
+2026-05-20 20:02:21,892 - __main__ - INFO - 🌐 URL: http://0.0.0.0:8000
+2026-05-20 20:02:21,893 - __main__ - INFO - 🧵 Threads: 4
+2026-05-20 20:02:21,893 - __main__ - INFO - 🔗 Connections: 100
+2026-05-20 20:02:21,893 - __main__ - INFO - ============================================================
+2026-05-20 20:02:21,900 - waitress - INFO - Serving on http://0.0.0.0:8000
+2026-05-20 20:27:57,860 - __main__ - INFO - ============================================================
+2026-05-20 20:27:57,860 - __main__ - INFO - 🚀 MUTUELLE SOLIDAIRE - PRODUCTION
+2026-05-20 20:27:57,861 - __main__ - INFO - ============================================================
+2026-05-20 20:27:57,861 - __main__ - INFO - 📁 Dossier: C:\mutuelle_app
+2026-05-20 20:27:57,861 - __main__ - INFO - 🌐 URL: http://0.0.0.0:8000
+2026-05-20 20:27:57,861 - __main__ - INFO - 🧵 Threads: 4
+2026-05-20 20:27:57,861 - __main__ - INFO - 🔗 Connections: 100
+2026-05-20 20:27:57,862 - __main__ - INFO - ============================================================
+2026-05-20 20:27:57,869 - waitress - INFO - Serving on http://0.0.0.0:8000
+2026-05-20 22:07:15,535 - flask_wtf.csrf - INFO - The CSRF session token is missing.
+2026-05-20 22:18:29,116 - __main__ - INFO - ============================================================
+2026-05-20 22:18:29,117 - __main__ - INFO - 🚀 MUTUELLE SOLIDAIRE - PRODUCTION
+2026-05-20 22:18:29,118 - __main__ - INFO - ============================================================
+2026-05-20 22:18:29,120 - __main__ - INFO - 📁 Dossier: C:\mutuelle_app
+2026-05-20 22:18:29,120 - __main__ - INFO - 🌐 URL: http://0.0.0.0:8000
+2026-05-20 22:18:29,121 - __main__ - INFO - 🧵 Threads: 4
+2026-05-20 22:18:29,121 - __main__ - INFO - 🔗 Connections: 100
+2026-05-20 22:18:29,122 - __main__ - INFO - ============================================================
+2026-05-20 22:18:29,129 - waitress - INFO - Serving on http://0.0.0.0:8000
+2026-05-20 22:19:17,796 - flask_wtf.csrf - INFO - The CSRF session token is missing.
+2026-05-20 22:24:04,093 - flask_wtf.csrf - INFO - The CSRF session token is missing.

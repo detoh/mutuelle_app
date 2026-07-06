@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}Importer des membres - Mutuelle Solidaire{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-dark mb-0">
+            <i class="fas fa-users text-primary"></i> Importer des membres
+        </h2>
+        <a href="{{ url_for('liste_membres') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Retour à la liste
+        </a>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- ── Colonne formulaire ── -->
+        <div class="col-lg-5">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white fw-semibold">
+                    1. Préparer le fichier
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">
+                        Téléchargez le modèle Excel, remplissez une ligne par membre,
+                        puis importez-le ci-dessous.
+                    </p>
+                    <a href="{{ url_for('telecharger_modele_import_membres') }}"
+                       class="btn btn-outline-primary w-100 mb-3">
+                        <i class="fas fa-download"></i> Télécharger le modèle Excel
+                    </a>
+
+                    <hr>
+
+                    <h6 class="fw-semibold text-dark mb-2">Colonnes attendues</h6>
+                    <ul class="small text-muted mb-0">
+                        <li><strong>nom</strong> — obligatoire</li>
+                        <li><strong>prenom</strong> — obligatoire</li>
+                        <li><strong>email</strong> — obligatoire, unique</li>
+                        <li>telephone — facultatif</li>
+                        <li>ville — facultatif</li>
+                        <li>date_adhesion — facultatif (format AAAA-MM-JJ, sinon date du jour)</li>
+                        <li>fonction — facultatif</li>
+                        <li>service — facultatif</li>
+                        <li>emploi — facultatif</li>
+                    </ul>
+                    <small class="text-muted d-block mt-2">
+                        Un mot de passe est généré automatiquement pour chaque membre importé.
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Colonne upload ── -->
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-success text-white fw-semibold">
+                    2. Importer le fichier
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark" for="fichier_import">
+                                Fichier Excel ou CSV
+                            </label>
+                            <input type="file"
+                                   class="form-control"
+                                   name="fichier_import"
+                                   id="fichier_import"
+                                   accept=".xlsx,.xls,.csv"
+                                   required>
+                            <small class="text-muted">Formats acceptés : .xlsx, .xls, .csv</small>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100 fw-semibold">
+                            <i class="fas fa-upload"></i> Lancer l'import
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if termine %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light fw-semibold d-flex justify-content-between">
+                    <span>Résultat de l'import</span>
+                    <span>
+                        <span class="badge bg-success">{{ lignes_ok|length }} importé(s)</span>
+                        <span class="badge bg-danger">{{ lignes_erreur|length }} en erreur</span>
+                    </span>
+                </div>
+                <div class="card-body">
+
+                    {% if lignes_ok %}
+                    <h6 class="fw-semibold text-success">Membres importés</h6>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-sm table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Ligne</th><th>Nom</th><th>Prénom</th>
+                                    <th>Email</th><th>Mot de passe généré</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ligne, nom, prenom, email, mdp in lignes_ok %}
+                                <tr>
+                                    <td>{{ ligne }}</td>
+                                    <td>{{ nom }}</td>
+                                    <td>{{ prenom }}</td>
+                                    <td>{{ email }}</td>
+                                    <td><code>{{ mdp }}</code></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <small class="text-muted">
+                        ⚠️ Communiquez ces mots de passe aux membres concernés —
+                        ils ne seront plus affichés après avoir quitté cette page.
+                    </small>
+                    {% endif %}
+
+                    {% if lignes_erreur %}
+                    <h6 class="fw-semibold text-danger mt-3">Lignes en erreur</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped">
+                            <thead>
+                                <tr><th>Ligne</th><th>Erreur</th></tr>
+                            </thead>
+                            <tbody>
+                                {% for ligne, message in lignes_erreur %}
+                                <tr>
+                                    <td>{{ ligne }}</td>
+                                    <td class="text-danger">{{ message }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

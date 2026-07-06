@@ -1,0 +1,23 @@
+2026-06-04 10:53:45,899 - __main__ - INFO - ============================================================
+2026-06-04 10:53:45,899 - __main__ - INFO - 🚀 MUTUELLE SOLIDAIRE - PRODUCTION
+2026-06-04 10:53:45,901 - __main__ - INFO - ============================================================
+2026-06-04 10:53:45,903 - __main__ - INFO - 📁 Dossier: C:\mutuelle_app
+2026-06-04 10:53:45,903 - __main__ - INFO - 🌐 URL: http://0.0.0.0:8000
+2026-06-04 10:53:45,904 - __main__ - INFO - 🧵 Threads: 4
+2026-06-04 10:53:45,904 - __main__ - INFO - 🔗 Connections: 100
+2026-06-04 10:53:45,905 - __main__ - INFO - ============================================================
+2026-06-04 10:53:45,913 - waitress - INFO - Serving on http://0.0.0.0:8000
+2026-06-04 11:10:07,848 - app - ERROR - Erreur déclaration événement membre 1: (psycopg2.errors.UndefinedFunction) ERREUR:  la procédure sp_creer_assistance_evenement(integer, integer, unknown, unknown, unknown, numeric, unknown, unknown) n'existe pas
+LINE 2:             CALL sp_creer_assistance_evenement(
+                         ^
+HINT:  Aucune procédure ne correspond au nom donné et aux types d'arguments.
+Vous pourriez avoir besoin d'ajouter des conversions de type explicites.
+
+[SQL: 
+            CALL sp_creer_assistance_evenement(
+                %(membre_id)s, %(famille_id)s, %(type_evenement)s, %(date_evenement)s,
+                %(description)s, %(montant_prevu)s, %(piece_jointe_path)s, %(notes)s
+            )
+        ]
+[parameters: {'membre_id': 1, 'famille_id': 2, 'type_evenement': 'Deces', 'date_evenement': '2025-05-30', 'description': 'Deces mere maman', 'montant_prevu': 0.0, 'piece_jointe_path': 'uploads/deces/1_2025-05-30_Sans_titre_1.pdf', 'notes': None}]
+(Background on this error at: https://sqlalche.me/e/20/f405)

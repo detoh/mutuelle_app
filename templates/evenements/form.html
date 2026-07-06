@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}{{ titre }} - Mutuelle Solidaire{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg">
+                <div class="card-header bg-info text-white py-3">
+                    <h4 class="mb-0">
+                        <i class="fas fa-calendar-plus"></i> {{ titre }}
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            <label for="nom" class="form-label fw-bold">
+                                <i class="fas fa-tag"></i> Nom de l'Événement *
+                            </label>
+                            {{ form.nom(class="form-control", placeholder="Ex: Assemblée Générale 2026") }}
+                            {% for error in form.nom.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="budget_prevu" class="form-label fw-bold">
+                                    <i class="fas fa-coins"></i> Budget Prévu (FCFA) *
+                                </label>
+                                {{ form.budget_prevu(class="form-control", placeholder="0.00", step="0.01") }}
+                                {% for error in form.budget_prevu.errors %}
+                                    <small class="text-danger">{{ error }}</small>
+                                {% endfor %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="depenses_reelles" class="form-label fw-bold">
+                                    <i class="fas fa-receipt"></i> Dépenses Réelles (FCFA)
+                                </label>
+                                {{ form.depenses_reelles(class="form-control", placeholder="0.00", step="0.01") }}
+                                {% for error in form.depenses_reelles.errors %}
+                                    <small class="text-danger">{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="date" class="form-label fw-bold">
+                                <i class="fas fa-calendar"></i> Date *
+                            </label>
+                            {{ form.date(class="form-control", type="date") }}
+                            {% for error in form.date.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+                            <small class="text-muted">Format : JJ/MM/AAAA</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label fw-bold">
+                                <i class="fas fa-align-left"></i> Description
+                            </label>
+                            {{ form.description(class="form-control", rows="4", 
+                                placeholder="Décrivez l'événement, les objectifs, les participants...") }}
+                            {% for error in form.description.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Conseil :</strong> Mettez à jour les dépenses réelles après l'événement 
+                            pour un suivi budgétaire précis.
+                        </div>
+                        <div class="mb-3 form-check">
+                            {{ form.statut(class="form-check-input") }}
+                            {{ form.statut.label(class="form-check-label") }}
+                            <div class="form-text">Décochez si l'événement est annulé ou en attente de validation.</div>
+                        </div>
+                        <div class="mb-3">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-info btn-lg text-white") }}
+                            <a href="{{ url_for('liste_evenements') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Retour à la Liste
+                            </a>
+                        </div>
+                        
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

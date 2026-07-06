@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}{{ membre.nom }} {{ membre.prenom }} - Mutuelle Solidaire{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+    }
+    .stat-box {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    .stat-box i {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+    .stat-box.income i { color: #27ae60; }
+    .stat-box.expense i { color: #e74c3c; }
+    .stat-box.balance i { color: #3498db; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- En-tête Profil -->
+    <!-- Dans l'en-tête du profil -->
+    <div class="profile-header">
+        <div class="row align-items-center">
+            <div class="col-md-2 text-center">
+                {% if membre.photo %}
+                    <img src="{{ url_for('static', filename=membre.photo) }}" 
+                        class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                {% else %}
+                    <i class="fas fa-user-circle fa-5x"></i>
+                {% endif %}
+            </div>
+            <div class="col-md-7">
+                <h2 class="mb-1">{{ membre.nom }} {{ membre.prenom }}</h2>
+                <p class="mb-1"><i class="fas fa-envelope"></i> {{ membre.email }}</p>
+                <p class="mb-1"><i class="fas fa-phone"></i> {{ membre.telephone or 'Non renseigné' }}</p>
+                <p class="mb-1"><i class="fas fa-building"></i> {{ membre.service or 'Service non renseigné' }}</p>
+                <p class="mb-1"><i class="fas fa-briefcase"></i> {{ membre.emploi or 'Emploi non renseigné' }}</p>
+                <p class="mb-0">
+                    <span class="badge bg-light text-dark">
+                        <i class="fas fa-calendar"></i> Adhésion : {{ membre.date_adhesion }}
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+        <div class="card mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0 fw-bold"><i class="fas fa-camera"></i> Photo de Profil</h5>
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('upload_photo', id=membre.id) }}" 
+                method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <input type="file" name="photo" class="form-control" accept="image/*">
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-upload"></i> Télécharger
+                        </button>
+                    </div>
+                </div>
+                <small class="text-muted">Formats acceptés : JPG, PNG, GIF (max 5MB)</small>
+            </form>
+        </div>
+    </div>
+    <!-- Statistiques Personnelles -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="stat-box income">
+                <i class="fas fa-coins"></i>
+                <h4 class="mb-1">{{ "%.2f"|format(total_cotise) }} €</h4>
+                <p class="text-muted mb-0">Total Cotisé</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-box expense">
+                <i class="fas fa-hand-holding-heart"></i>
+                <h4 class="mb-1">{{ "%.2f"|format(total_aides) }} €</h4>
+                <p class="text-muted mb-0">Aides Reçues</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-box balance">
+                <i class="fas fa-wallet"></i>
+                <h4 class="mb-1">{{ "%.2f"|format(total_cotise - total_aides) }} €</h4>
+                <p class="text-muted mb-0">Solde Personnel</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Historique des Cotisations -->
+    <div class="card mb-4">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold">
+                <i class="fas fa-coins text-success"></i> Historique des Cotisations
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            {% if cotisations %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="py-3">Type</th>
+                            <th class="py-3">Période</th>
+                            <th class="py-3">Date Paiement</th>
+                            <th class="py-3">Montant</th>
+                            <th class="py-3">Statut</th>
+                            <th class="py-3">Reçu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cot in cotisations %}
+                        <tr>
+                            <td class="py-3">
+                                {% if cot.type_cotisation == 'Adhesion' %}
+                                    <span class="badge bg-primary">Adhésion</span>
+                                {% elif cot.type_cotisation == 'Mensuelle' %}
+                                    <span class="badge bg-success">Mensuelle</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">Exceptionnelle</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3">{{ cot.periode }}</td>
+                            <td class="py-3">{{ membre.date_adhesion or '-' }}</td>
+                            <td class="py-3 fw-bold">{{ "%.2f"|format(cot.montant) }} €</td>
+                            <td class="py-3">
+                                <span class="badge bg-success">{{ cot.statut }}</span>
+                            </td>
+                            <td class="py-3">
+                                <a href="{{ url_for('telecharger_recu', id=cot.id) }}" 
+                                   class="btn btn-sm btn-outline-primary" target="_blank">
+                                    <i class="fas fa-download"></i> PDF
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4 text-muted">
+                <i class="fas fa-inbox fa-3x mb-3"></i>
+                <p>Aucune cotisation enregistrée</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Historique des Aides -->
+    <div class="card">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold">
+                <i class="fas fa-hand-holding-heart text-danger"></i> Historique des Aides
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            {% if aides %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="py-3">Type d'Aide</th>
+                            <th class="py-3">Date</th>
+                            <th class="py-3">Montant</th>
+                            <th class="py-3">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for aide in aides %}
+                        <tr>
+                            <td class="py-3">
+                                <span class="badge bg-danger">{{ aide.type_aide }}</span>
+                            </td>
+                            <td class="py-3">{{ aide.date_attribution.strftime('%d/%m/%Y') if aide.date_attribution else '—' }}</td>
+                            <td class="py-3 fw-bold">{{ "%.2f"|format(aide.montant) }} €</td>
+                            <td class="py-3">{{ aide.description or '-' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4 text-muted">
+                <i class="fas fa-gift fa-3x mb-3"></i>
+                <p>Aucune aide reçue</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

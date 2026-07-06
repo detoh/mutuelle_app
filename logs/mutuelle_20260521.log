@@ -1,0 +1,15 @@
+2026-05-21 07:57:25,339 - __main__ - INFO - ============================================================
+2026-05-21 07:57:25,339 - __main__ - INFO - 🚀 MUTUELLE SOLIDAIRE - PRODUCTION
+2026-05-21 07:57:25,340 - __main__ - INFO - ============================================================
+2026-05-21 07:57:25,341 - __main__ - INFO - 📁 Dossier: C:\mutuelle_app
+2026-05-21 07:57:25,341 - __main__ - INFO - 🌐 URL: http://0.0.0.0:8000
+2026-05-21 07:57:25,341 - __main__ - INFO - 🧵 Threads: 4
+2026-05-21 07:57:25,341 - __main__ - INFO - 🔗 Connections: 100
+2026-05-21 07:57:25,341 - __main__ - INFO - ============================================================
+2026-05-21 07:57:25,349 - waitress - INFO - Serving on http://0.0.0.0:8000
+2026-05-21 08:54:50,728 - utils.notifications - ERROR - ❌ Erreur envoi email: (530, b'5.7.0 Authentication Required. For more information, go to\n5.7.0  https://support.google.com/accounts/troubleshooter/2402620. 4fb4d7f45d1cf-68311670e02sm8644325a12.22 - gsmtp', '=?utf-8?q?Mutuelle_Solidaire?= <patrickdetoh@gmail.com>')
+2026-05-21 08:57:01,901 - utils.notifications - ERROR - ❌ Erreur envoi email: (530, b'5.7.0 Authentication Required. For more information, go to\n5.7.0  https://support.google.com/accounts/troubleshooter/2402620. a640c23a62f3a-bdc8a410c87sm17247866b.30 - gsmtp', '=?utf-8?q?Mutuelle_Solidaire?= <patrickdetoh@gmail.com>')
+2026-05-21 08:57:01,909 - app - ERROR - Erreur notification admins: name 'send_admin_aide_request' is not defined
+2026-05-21 09:15:35,973 - utils.notifications - ERROR - ❌ Erreur envoi email: (530, b'5.7.0 Authentication Required. For more information, go to\n5.7.0  https://support.google.com/accounts/troubleshooter/2402620. 4fb4d7f45d1cf-687393e8e89sm1731576a12.8 - gsmtp', '=?utf-8?q?Mutuelle_Solidaire?= <patrickdetoh@gmail.com>')
+2026-05-21 09:17:32,756 - utils.notifications - ERROR - ❌ Erreur envoi email: (530, b'5.7.0 Authentication Required. For more information, go to\n5.7.0  https://support.google.com/accounts/troubleshooter/2402620. a640c23a62f3a-bdc8aa05cffsm19320766b.50 - gsmtp', '=?utf-8?q?Mutuelle_Solidaire?= <patrickdetoh@gmail.com>')
+2026-05-21 09:17:32,759 - app - ERROR - Erreur notification admins: name 'send_admin_aide_request' is not defined

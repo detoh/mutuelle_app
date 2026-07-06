@@ -1,0 +1,457 @@
+2026-06-08 08:31:20,393 - __main__ - INFO - ============================================================
+2026-06-08 08:31:20,394 - __main__ - INFO - 🚀 MUTUELLE SOLIDAIRE - PRODUCTION
+2026-06-08 08:31:20,395 - __main__ - INFO - ============================================================
+2026-06-08 08:31:20,395 - __main__ - INFO - 📁 Dossier: C:\mutuelle_app
+2026-06-08 08:31:20,395 - __main__ - INFO - 🌐 URL: http://0.0.0.0:8000
+2026-06-08 08:31:20,395 - __main__ - INFO - 🧵 Threads: 4
+2026-06-08 08:31:20,396 - __main__ - INFO - 🔗 Connections: 100
+2026-06-08 08:31:20,396 - __main__ - INFO - ============================================================
+2026-06-08 08:31:20,401 - waitress - INFO - Serving on http://0.0.0.0:8000
+2026-06-08 08:48:54,837 - __main__ - INFO - ============================================================
+2026-06-08 08:48:54,838 - __main__ - INFO - 🚀 MUTUELLE SOLIDAIRE - PRODUCTION
+2026-06-08 08:48:54,839 - __main__ - INFO - ============================================================
+2026-06-08 08:48:54,841 - __main__ - INFO - 📁 Dossier: C:\mutuelle_app
+2026-06-08 08:48:54,841 - __main__ - INFO - 🌐 URL: http://0.0.0.0:8000
+2026-06-08 08:48:54,842 - __main__ - INFO - 🧵 Threads: 4
+2026-06-08 08:48:54,842 - __main__ - INFO - 🔗 Connections: 100
+2026-06-08 08:48:54,844 - __main__ - INFO - ============================================================
+2026-06-08 08:48:54,849 - waitress - INFO - Serving on http://0.0.0.0:8000
+2026-06-08 10:44:41,737 - __main__ - INFO - ============================================================
+2026-06-08 10:44:41,738 - __main__ - INFO - 🚀 MUTUELLE SOLIDAIRE - PRODUCTION
+2026-06-08 10:44:41,739 - __main__ - INFO - ============================================================
+2026-06-08 10:44:41,741 - __main__ - INFO - 📁 Dossier: C:\mutuelle_app
+2026-06-08 10:44:41,741 - __main__ - INFO - 🌐 URL: http://0.0.0.0:8000
+2026-06-08 10:44:41,742 - __main__ - INFO - 🧵 Threads: 4
+2026-06-08 10:44:41,742 - __main__ - INFO - 🔗 Connections: 100
+2026-06-08 10:44:41,743 - __main__ - INFO - ============================================================
+2026-06-08 10:44:41,748 - waitress - INFO - Serving on http://0.0.0.0:8000
+2026-06-08 10:56:05,064 - app - ERROR - Exception on /ajouter_membre_famille [POST]
+Traceback (most recent call last):
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UniqueViolation: ERREUR:  la valeur d'une clé dupliquée rompt la contrainte unique « unique_membre_parent »
+DETAIL:  La clé « (membre_id, nom, prenom, lien_parente)=(8, KANTE, PRINCE, Enfant) » existe déjà.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 1455, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 869, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 867, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 852, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\mutuelle_app\app.py", line 783, in ajouter_membre_famille
+    db.session.commit()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\scoping.py", line 597, in commit
+    return self._proxied.commit()
+           ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2030, in commit
+    trans.commit(_to_root=True)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "<string>", line 2, in commit
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 1311, in commit
+    self._prepare_impl()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "<string>", line 2, in _prepare_impl
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 1286, in _prepare_impl
+    self.session.flush()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 4331, in flush
+    self._flush(objects)
+    ~~~~~~~~~~~^^^^^^^^^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 4466, in _flush
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 121, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 4427, in _flush
+    flush_context.execute()
+    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 466, in execute
+    rec.execute(self)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.mapper,
+        ^^^^^^^^^^^^
+        uow.states_for_mapper_hierarchy(self.mapper, False, False),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        uow,
+        ^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        base_mapper,
+        ^^^^^^^^^^^^
+    ...<3 lines>...
+        insert,
+        ^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\persistence.py", line 1233, in _emit_insert_statements
+    result = connection.execute(
+        statement,
+        params,
+        execution_options=execution_options,
+    )
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.UniqueViolation) ERREUR:  la valeur d'une clé dupliquée rompt la contrainte unique « unique_membre_parent »
+DETAIL:  La clé « (membre_id, nom, prenom, lien_parente)=(8, KANTE, PRINCE, Enfant) » existe déjà.
+
+[SQL: INSERT INTO famille_membres (membre_id, nom, prenom, lien_parente, date_naissance, date_deces, date_ajout, telephone, adresse, est_a_charge, notes, parent1_membre_id, parent2_membre_id) VALUES (%(membre_id)s, %(nom)s, %(prenom)s, %(lien_parente)s, %(date_naissance)s, %(date_deces)s, now(), %(telephone)s, %(adresse)s, %(est_a_charge)s, %(notes)s, %(parent1_membre_id)s, %(parent2_membre_id)s) RETURNING famille_membres.id, famille_membres.date_ajout]
+[parameters: {'membre_id': 8, 'nom': 'KANTE', 'prenom': 'PRINCE', 'lien_parente': 'Enfant', 'date_naissance': datetime.date(2006, 6, 6), 'date_deces': None, 'telephone': '', 'adresse': None, 'est_a_charge': True, 'notes': None, 'parent1_membre_id': None, 'parent2_membre_id': None}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-06-08 10:56:22,500 - app - ERROR - Exception on /ajouter_membre_famille [POST]
+Traceback (most recent call last):
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UniqueViolation: ERREUR:  la valeur d'une clé dupliquée rompt la contrainte unique « unique_membre_parent »
+DETAIL:  La clé « (membre_id, nom, prenom, lien_parente)=(8, KANTE, PRINCE, Enfant) » existe déjà.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 1455, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 869, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 867, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 852, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\mutuelle_app\app.py", line 783, in ajouter_membre_famille
+    db.session.commit()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\scoping.py", line 597, in commit
+    return self._proxied.commit()
+           ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2030, in commit
+    trans.commit(_to_root=True)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "<string>", line 2, in commit
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 1311, in commit
+    self._prepare_impl()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "<string>", line 2, in _prepare_impl
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 1286, in _prepare_impl
+    self.session.flush()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 4331, in flush
+    self._flush(objects)
+    ~~~~~~~~~~~^^^^^^^^^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 4466, in _flush
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 121, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 4427, in _flush
+    flush_context.execute()
+    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 466, in execute
+    rec.execute(self)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.mapper,
+        ^^^^^^^^^^^^
+        uow.states_for_mapper_hierarchy(self.mapper, False, False),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        uow,
+        ^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        base_mapper,
+        ^^^^^^^^^^^^
+    ...<3 lines>...
+        insert,
+        ^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\persistence.py", line 1233, in _emit_insert_statements
+    result = connection.execute(
+        statement,
+        params,
+        execution_options=execution_options,
+    )
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.UniqueViolation) ERREUR:  la valeur d'une clé dupliquée rompt la contrainte unique « unique_membre_parent »
+DETAIL:  La clé « (membre_id, nom, prenom, lien_parente)=(8, KANTE, PRINCE, Enfant) » existe déjà.
+
+[SQL: INSERT INTO famille_membres (membre_id, nom, prenom, lien_parente, date_naissance, date_deces, date_ajout, telephone, adresse, est_a_charge, notes, parent1_membre_id, parent2_membre_id) VALUES (%(membre_id)s, %(nom)s, %(prenom)s, %(lien_parente)s, %(date_naissance)s, %(date_deces)s, now(), %(telephone)s, %(adresse)s, %(est_a_charge)s, %(notes)s, %(parent1_membre_id)s, %(parent2_membre_id)s) RETURNING famille_membres.id, famille_membres.date_ajout]
+[parameters: {'membre_id': 8, 'nom': 'KANTE', 'prenom': 'PRINCE', 'lien_parente': 'Enfant', 'date_naissance': datetime.date(2006, 6, 6), 'date_deces': None, 'telephone': '', 'adresse': None, 'est_a_charge': True, 'notes': None, 'parent1_membre_id': None, 'parent2_membre_id': None}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-06-08 11:00:51,245 - app - ERROR - Erreur déclaration événement membre 9: (psycopg2.errors.NotNullViolation) ERREUR:  une valeur NULL viole la contrainte NOT NULL de la colonne « signature_unique » dans la relation « assistance_evenements »
+DETAIL:  La ligne en échec contient (3, 9, null, Mariage, 2026-12-10, TIE BI DJE, 10000.00, null, En attente, null, null, 2026-06-08 11:00:51.211755, null, null, null, null, MARIAGE).
+CONTEXT:  instruction SQL « INSERT INTO assistance_evenements (
+        membre_id,
+        famille_id,
+        type_evenement,
+        date_evenement,
+        description,
+        montant_prevu,
+        piece_jointe_path,
+        notes
+    ) VALUES (
+        p_membre_id,
+        p_famille_id,
+        p_type_evenement,
+        p_date_evenement,
+        p_description,
+        p_montant_prevu,
+        p_piece_jointe_path,
+        p_notes
+    ) »
+fonction PL/pgSQL sp_creer_assistance_evenement(integer,integer,character varying,date,text,numeric,text,text), ligne 4 à instruction SQL
+
+[SQL: 
+            CALL sp_creer_assistance_evenement(
+                %(membre_id)s, %(famille_id)s, %(type_evenement)s, %(date_evenement)s,
+                %(description)s, %(montant_prevu)s, %(piece_jointe_path)s, %(notes)s
+            )
+        ]
+[parameters: {'membre_id': 9, 'famille_id': None, 'type_evenement': 'Mariage', 'date_evenement': '2026-12-10', 'description': 'TIE BI DJE', 'montant_prevu': 10000.0, 'piece_jointe_path': None, 'notes': 'MARIAGE'}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-06-08 11:13:59,147 - app - ERROR - Erreur déclaration événement membre 9: (psycopg2.errors.NotNullViolation) ERREUR:  une valeur NULL viole la contrainte NOT NULL de la colonne « signature_unique » dans la relation « assistance_evenements »
+DETAIL:  La ligne en échec contient (4, 9, null, Mariage, 2026-12-10, TIE BI DJE, 10000.00, null, En attente, null, uploads/mariages/9_2026-12-10_Doc1.pdf, 2026-06-08 11:13:59.107216, null, null, null, null, MARIAGE).
+CONTEXT:  instruction SQL « INSERT INTO assistance_evenements (
+        membre_id,
+        famille_id,
+        type_evenement,
+        date_evenement,
+        description,
+        montant_prevu,
+        piece_jointe_path,
+        notes
+    ) VALUES (
+        p_membre_id,
+        p_famille_id,
+        p_type_evenement,
+        p_date_evenement,
+        p_description,
+        p_montant_prevu,
+        p_piece_jointe_path,
+        p_notes
+    ) »
+fonction PL/pgSQL sp_creer_assistance_evenement(integer,integer,character varying,date,text,numeric,text,text), ligne 4 à instruction SQL
+
+[SQL: 
+            CALL sp_creer_assistance_evenement(
+                %(membre_id)s, %(famille_id)s, %(type_evenement)s, %(date_evenement)s,
+                %(description)s, %(montant_prevu)s, %(piece_jointe_path)s, %(notes)s
+            )
+        ]
+[parameters: {'membre_id': 9, 'famille_id': None, 'type_evenement': 'Mariage', 'date_evenement': '2026-12-10', 'description': 'TIE BI DJE', 'montant_prevu': 10000.0, 'piece_jointe_path': 'uploads/mariages/9_2026-12-10_Doc1.pdf', 'notes': 'MARIAGE'}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-06-08 11:15:31,702 - app - ERROR - Erreur déclaration événement membre 9: (psycopg2.errors.NotNullViolation) ERREUR:  une valeur NULL viole la contrainte NOT NULL de la colonne « signature_unique » dans la relation « assistance_evenements »
+DETAIL:  La ligne en échec contient (5, 9, null, Mariage, 2026-10-10, MARIAGE, 0.00, null, En attente, null, uploads/mariages/9_2026-10-10_Doc1.pdf, 2026-06-08 11:15:31.696098, null, null, null, null, AUTORISATION).
+CONTEXT:  instruction SQL « INSERT INTO assistance_evenements (
+        membre_id,
+        famille_id,
+        type_evenement,
+        date_evenement,
+        description,
+        montant_prevu,
+        piece_jointe_path,
+        notes
+    ) VALUES (
+        p_membre_id,
+        p_famille_id,
+        p_type_evenement,
+        p_date_evenement,
+        p_description,
+        p_montant_prevu,
+        p_piece_jointe_path,
+        p_notes
+    ) »
+fonction PL/pgSQL sp_creer_assistance_evenement(integer,integer,character varying,date,text,numeric,text,text), ligne 4 à instruction SQL
+
+[SQL: 
+            CALL sp_creer_assistance_evenement(
+                %(membre_id)s, %(famille_id)s, %(type_evenement)s, %(date_evenement)s,
+                %(description)s, %(montant_prevu)s, %(piece_jointe_path)s, %(notes)s
+            )
+        ]
+[parameters: {'membre_id': 9, 'famille_id': None, 'type_evenement': 'Mariage', 'date_evenement': '2026-10-10', 'description': 'MARIAGE', 'montant_prevu': 0.0, 'piece_jointe_path': 'uploads/mariages/9_2026-10-10_Doc1.pdf', 'notes': 'AUTORISATION'}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-06-08 11:20:30,180 - app - ERROR - Erreur déclaration événement membre 8: (psycopg2.errors.NotNullViolation) ERREUR:  une valeur NULL viole la contrainte NOT NULL de la colonne « signature_unique » dans la relation « assistance_evenements »
+DETAIL:  La ligne en échec contient (6, 8, 13, Naissance, 2026-12-25, mariage de mon neuveu, 200000.00, null, En attente, null, null, 2026-06-08 11:20:30.050855, null, null, null, null, null).
+CONTEXT:  instruction SQL « INSERT INTO assistance_evenements (
+        membre_id,
+        famille_id,
+        type_evenement,
+        date_evenement,
+        description,
+        montant_prevu,
+        piece_jointe_path,
+        notes
+    ) VALUES (
+        p_membre_id,
+        p_famille_id,
+        p_type_evenement,
+        p_date_evenement,
+        p_description,
+        p_montant_prevu,
+        p_piece_jointe_path,
+        p_notes
+    ) »
+fonction PL/pgSQL sp_creer_assistance_evenement(integer,integer,character varying,date,text,numeric,text,text), ligne 4 à instruction SQL
+
+[SQL: 
+            CALL sp_creer_assistance_evenement(
+                %(membre_id)s, %(famille_id)s, %(type_evenement)s, %(date_evenement)s,
+                %(description)s, %(montant_prevu)s, %(piece_jointe_path)s, %(notes)s
+            )
+        ]
+[parameters: {'membre_id': 8, 'famille_id': 13, 'type_evenement': 'Naissance', 'date_evenement': '2026-12-25', 'description': 'mariage de mon neuveu', 'montant_prevu': 200000.0, 'piece_jointe_path': None, 'notes': None}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-06-08 12:24:07,536 - __main__ - INFO - ============================================================
+2026-06-08 12:24:07,539 - __main__ - INFO - 🚀 MUTUELLE SOLIDAIRE - PRODUCTION
+2026-06-08 12:24:07,540 - __main__ - INFO - ============================================================
+2026-06-08 12:24:07,541 - __main__ - INFO - 📁 Dossier: C:\mutuelle_app
+2026-06-08 12:24:07,543 - __main__ - INFO - 🌐 URL: http://0.0.0.0:8000
+2026-06-08 12:24:07,543 - __main__ - INFO - 🧵 Threads: 4
+2026-06-08 12:24:07,544 - __main__ - INFO - 🔗 Connections: 100
+2026-06-08 12:24:07,545 - __main__ - INFO - ============================================================
+2026-06-08 12:24:07,554 - waitress - INFO - Serving on http://0.0.0.0:8000
+2026-06-08 12:45:33,734 - __main__ - INFO - ============================================================
+2026-06-08 12:45:33,735 - __main__ - INFO - 🚀 MUTUELLE SOLIDAIRE - PRODUCTION
+2026-06-08 12:45:33,737 - __main__ - INFO - ============================================================
+2026-06-08 12:45:33,739 - __main__ - INFO - 📁 Dossier: C:\mutuelle_app
+2026-06-08 12:45:33,739 - __main__ - INFO - 🌐 URL: http://0.0.0.0:8000
+2026-06-08 12:45:33,740 - __main__ - INFO - 🧵 Threads: 4
+2026-06-08 12:45:33,741 - __main__ - INFO - 🔗 Connections: 100
+2026-06-08 12:45:33,741 - __main__ - INFO - ============================================================
+2026-06-08 12:45:33,753 - waitress - INFO - Serving on http://0.0.0.0:8000

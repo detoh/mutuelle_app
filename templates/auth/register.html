@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Inscription - Mutuelle Solidaire{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg">
+                <div class="card-body p-5">
+                    <!-- En-tête du formulaire -->
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-plus fa-3x text-success mb-3"></i>
+                        <h3 class="fw-bold">Créer un Compte</h3>
+                        <p class="text-muted">Rejoignez notre mutuelle solidaire</p>
+                    </div>
+
+                    <!-- Formulaire -->
+                    <form method="POST" action="{{ url_for('register') }}">
+                         {{ form.hidden_tag() }}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="nom" class="form-label">
+                                    <i class="fas fa-user"></i> Nom
+                                </label>
+                                {{ form.nom(class="form-control", placeholder="Votre nom") }}
+                                {% for error in form.nom.errors %}
+                                    <small class="text-danger">{{ error }}</small>
+                                {% endfor %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="prenom" class="form-label">
+                                    <i class="fas fa-user"></i> Prénom
+                                </label>
+                                {{ form.prenom(class="form-control", placeholder="Votre prénom") }}
+                                {% for error in form.prenom.errors %}
+                                    <small class="text-danger">{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                <i class="fas fa-envelope"></i> Adresse Email
+                            </label>
+                            {{ form.email(class="form-control", placeholder="exemple@email.com") }}
+                            {% for error in form.email.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="telephone" class="form-label">
+                                <i class="fas fa-phone"></i> Téléphone
+                            </label>
+                            {{ form.telephone(class="form-control", placeholder="+225 07 07 23 83 64 ") }}
+                            {% for error in form.telephone.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">
+                                <i class="fas fa-lock"></i> Mot de passe
+                            </label>
+                            {{ form.password(class="form-control", placeholder="••••••••") }}
+                            {% for error in form.password.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+                            <small class="text-muted">Minimum 8 caractères recommandé</small>
+                        </div>
+
+                        <div class="mb-4 form-check">
+                            <input type="checkbox" class="form-check-input" id="conditions" required>
+                            <label class="form-check-label" for="conditions">
+                                J'accepte les <a href="#">conditions d'utilisation</a> et la <a href="#">politique de confidentialité</a>
+                            </label>
+                        </div>
+
+                        <div class="d-grid">
+                            {{ form.submit(class="btn btn-success btn-lg") }}
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <!-- Lien retour -->
+                    <div class="text-center">
+                        <p class="mb-0">Déjà un compte ? 
+                            <a href="{{ url_for('login') }}" class="text-decoration-none">Se connecter</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

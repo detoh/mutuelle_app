@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}Accueil - Mutuelle Solidaire{% endblock %}
+
+{% block content %}
+<!-- Header Hero Section -->
+<div class="page-header text-center">
+    <div class="container">
+        <h1 class="display-4"><i class="fas fa-hands-helping"></i> Bienvenue à la Mutuelle Solidaire</h1>
+        <p class="lead">Ensemble, construisons un avenir plus sûr pour tous nos membres</p>
+        {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('register') }}" class="btn btn-light btn-lg me-2">
+                <i class="fas fa-user-plus"></i> Rejoignez-nous
+            </a>
+            <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-sign-in-alt"></i> Connexion
+            </a>
+        {% else %}
+            <a href="{{ url_for('dashboard') }}" class="btn btn-light btn-lg">
+                <i class="fas fa-tachometer-alt"></i> Accéder au Tableau de Bord
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Section Services -->
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">Nos Services</h2>
+        <p class="text-muted">Découvrez tous les avantages de notre mutuelle</p>
+    </div>
+    
+    <div class="row g-4">
+        <!-- Service 1 -->
+        <div class="col-md-4">
+            <div class="card h-100 text-center p-4">
+                <div class="card-body">
+                    <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                    <h4 class="card-title">Gestion des Membres</h4>
+                    <p class="card-text">Suivi complet des adhésions, statuts et informations de chaque membre de la mutuelle.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Service 2 -->
+        <div class="col-md-4">
+            <div class="card h-100 text-center p-4">
+                <div class="card-body">
+                    <i class="fas fa-coins fa-3x text-success mb-3"></i>
+                    <h4 class="card-title">Cotisations</h4>
+                    <p class="card-text">Gestion transparente des cotisations mensuelles, adhésions et contributions exceptionnelles.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Service 3 -->
+        <div class="col-md-4">
+            <div class="card h-100 text-center p-4">
+                <div class="card-body">
+                    <i class="fas fa-heart fa-3x text-danger mb-3"></i>
+                    <h4 class="card-title">Aides Sociales</h4>
+                    <p class="card-text">Assistance pour mariages, obsèques, maladies et autres cas nécessitant un soutien.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Service 4 -->
+        <div class="col-md-4">
+            <div class="card h-100 text-center p-4">
+                <div class="card-body">
+                    <i class="fas fa-chart-line fa-3x text-info mb-3"></i>
+                    <h4 class="card-title">Tableau de Bord</h4>
+                    <p class="card-text">Visualisation en temps réel du solde de la caisse, entrées et sorties financières.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Service 5 -->
+        <div class="col-md-4">
+            <div class="card h-100 text-center p-4">
+                <div class="card-body">
+                    <i class="fas fa-calendar-alt fa-3x text-warning mb-3"></i>
+                    <h4 class="card-title">Événements</h4>
+                    <p class="card-text">Organisation et gestion des événements de la mutuelle avec suivi budgétaire.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Service 6 -->
+        <div class="col-md-4">
+            <div class="card h-100 text-center p-4">
+                <div class="card-body">
+                    <i class="fas fa-bell fa-3x text-secondary mb-3"></i>
+                    <h4 class="card-title">Notifications</h4>
+                    <p class="card-text">Alertes par email et SMS pour les cotisations, aides et annonces importantes.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Section Statistiques -->
+<div class="bg-light py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Pourquoi Nous Choisir ?</h2>
+            <p class="text-muted">Des chiffres qui parlent d'eux-mêmes</p>
+        </div>
+        
+        <div class="row text-center">
+            <div class="col-md-3 mb-4">
+                <div class="card stat-card success p-4">
+                    <h3 class="text-success"><i class="fas fa-check-circle"></i> 100%</h3>
+                    <p class="mb-0">Transparence Financière</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card stat-card p-4">
+                    <h3 class="text-primary"><i class="fas fa-clock"></i> 24/7</h3>
+                    <p class="mb-0">Accès à Votre Compte</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card stat-card success p-4">
+                    <h3 class="text-success"><i class="fas fa-shield-alt"></i> Sécurisé</h3>
+                    <p class="mb-0">Données Protégées</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card stat-card p-4">
+                    <h3 class="text-primary"><i class="fas fa-headset"></i> Support</h3>
+                    <p class="mb-0">Assistance Dédiée</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Section Call to Action -->
+<div class="container my-5">
+    <div class="card bg-primary text-white text-center p-5">
+        <div class="card-body">
+            <h2 class="card-title mb-4">Prêt à Rejoindre Notre Communauté ?</h2>
+            <p class="card-text lead mb-4">Rejoignez des centaines de membres qui bénéficient déjà de notre solidarité</p>
+            {% if not current_user.is_authenticated %}
+                <a href="{{ url_for('register') }}" class="btn btn-light btn-lg">
+                    <i class="fas fa-user-plus"></i> Créer un Compte Gratuit
+                </a>
+            {% else %}
+                <a href="{{ url_for('dashboard') }}" class="btn btn-light btn-lg">
+                    <i class="fas fa-tachometer-alt"></i> Accéder à Mon Espace
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

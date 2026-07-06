@@ -1,0 +1,445 @@
+{% extends "base.html" %}
+
+{% block title %}Tableau de Bord - Mutuelle Solidaire{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stat-card {
+        border-radius: 15px;
+        transition: all 0.3s ease;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 1.5rem;
+    }
+    .bg-gradient-primary  { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .bg-gradient-success  { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+    .bg-gradient-danger   { background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); }
+    .bg-gradient-info     { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- En-tête de page -->
+<div class="page-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="mb-2"><i class="fas fa-tachometer-alt"></i> Tableau de Bord</h1>
+                <p class="mb-0 opacity-75">Vue d'ensemble de la mutuelle</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <span class="badge bg-light text-dark p-2">
+                    <i class="fas fa-calendar"></i>
+                    {{ variable.strftime('%d/%m/%Y') if variable else '-' }}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-4">
+
+    <!-- ── Cartes Statistiques ─────────────────────────────────────── -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card bg-gradient-success text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1 opacity-75">Solde Caisse</p>
+                            <h3 class="mb-0 fw-bold">{{ "%.2f"|format(solde_caisse) }}FCFA</h3>
+                        </div>
+                        <div class="stat-icon bg-white text-success"><i class="fas fa-wallet"></i></div>
+                    </div>
+                    <div class="mt-3"><small class="opacity-75"><i class="fas fa-arrow-up"></i> Disponible</small></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card bg-gradient-primary text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1 opacity-75">Total Entrées</p>
+                            <h3 class="mb-0 fw-bold">{{ "%.2f"|format(total_entrees) }}FCFA</h3>
+                        </div>
+                        <div class="stat-icon bg-white text-primary"><i class="fas fa-arrow-down"></i></div>
+                    </div>
+                    <div class="mt-3"><small class="opacity-75">Cotisations + Dons</small></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card bg-gradient-danger text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1 opacity-75">Total Sorties</p>
+                            <h3 class="mb-0 fw-bold">{{ "%.2f"|format(total_sorties) }}FCFA </h3>
+                        </div>
+                        <div class="stat-icon bg-white text-danger"><i class="fas fa-arrow-up"></i></div>
+                    </div>
+                    <div class="mt-3"><small class="opacity-75">Aides + Événements</small></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card bg-gradient-info text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1 opacity-75">Membres Actifs</p>
+                            <h3 class="mb-0 fw-bold">{{ nb_membres }}</h3>
+                        </div>
+                        <div class="stat-icon bg-white text-info"><i class="fas fa-users"></i></div>
+                    </div>
+                    <div class="mt-3"><small class="opacity-75"><i class="fas fa-user-plus"></i> En croissance</small></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Actions rapides + Graphique donut ───────────────────────── -->
+    <div class="row g-4 mb-4">
+
+        <!-- Actions Rapides -->
+        <div class="col-lg-4">
+            <div class="card h-100">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-bolt text-warning"></i> Actions Rapides</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('ajouter_cotisation') }}" class="btn btn-outline-success">
+                            <i class="fas fa-coins"></i> Enregistrer Cotisation
+                        </a>
+                        <a href="{{ url_for('ajouter_aide') }}" class="btn btn-outline-danger">
+                            <i class="fas fa-hand-holding-heart"></i> Accorder une Aide
+                        </a>
+                        <a href="{{ url_for('ajouter_membre') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-user-plus"></i> Nouveau Membre
+                        </a>
+                        <a href="{{ url_for('ajouter_evenement') }}" class="btn btn-outline-primary">
+                            <i class="fa fa-calendar"></i> Nouveau Événement
+                        </a>
+                        <a href="{{ url_for('liste_membres') }}" class="btn btn-outline-info">
+                            <i class="fas fa-list"></i> Voir Tous les Membres
+                        </a>
+                        <a href="{{ url_for('parametres_cotisation') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-sliders-h"></i> Paramètres de Cotisation
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Graphique Donut Finances -->
+        <div class="col-lg-8">
+            <div class="card h-100">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="fas fa-chart-pie text-primary"></i> Répartition Financière
+                    </h5>
+                </div>
+                <div class="card-body d-flex justify-content-center align-items-center">
+                    <div style="position:relative; height:280px; width:100%; max-width:400px;">
+                        <canvas id="financeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ── Graphique Flux mensuels ─────────────────────────────────── -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="fas fa-chart-line text-primary"></i>
+                        Évolution des Flux Financiers (12 derniers mois)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if monthly_flow and monthly_flow|length > 0 %}
+                    <div style="position:relative; height:400px;">
+                        <canvas id="flowChart"></canvas>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5 text-muted">
+                        <i class="fas fa-chart-bar fa-4x mb-3"></i>
+                        <p class="mb-0">Aucune donnée disponible pour le graphique</p>
+                        <small>Commencez par ajouter des cotisations, dons, aides ou événements</small>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if monthly_flow and monthly_flow|length > 0 %}
+                 <div class="card-footer bg-white">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <small class="text-muted">Total Entrées</small>
+                            <div class="fw-bold text-success">{{ "%.2f"|format(total_entrees) }} FCFA</div>
+                        </div>
+                        <div class="col-4">
+                            <small class="text-muted">Total Sorties</small>
+                            <div class="fw-bold text-danger">{{ "%.2f"|format(total_sorties) }} FCFA</div>
+                        </div>
+                        <div class="col-4">
+                            <small class="text-muted">Solde Net</small>
+                            <div class="fw-bold text-primary">{{ "%.2f"|format(solde_caisse) }} FCFA</div>
+                        </div>
+                    </div>
+                 </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+   
+    <!-- ========================================================= -->
+    <!-- SECTION : DERNIÈRES TRANSACTIONS                            
+    <!-- ========================================================= -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-history me-2"></i> Dernières Transactions
+            </h6>
+            <a href="{{ url_for('rapports') }}" class="btn btn-sm btn-outline-primary">
+                Voir tout l'historique <i class="fas fa-arrow-right ms-1"></i>
+            </a>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Type de Transaction</th>
+                            <th>Membre / Donateur</th>
+                            <th>Date Transaction</th>
+                            <th class="text-end">Montant</th>
+                            <th class="text-center">Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in recent_transactions %}
+                        <tr>
+                            <!-- 1. TYPE -->
+                            <td>
+                                {% if t.type_op == 'cotisation' %}
+                                    <span class="badge bg-primary text-white p-2">
+                                        <i class="fas fa-coins"></i> Cotisation
+                                    </span>
+                                {% elif t.type_op == 'aide' %}
+                                    <span class="badge bg-danger text-white p-2">
+                                        <i class="fas fa-hand-holding-heart"></i> Aide
+                                    </span>
+                                {% elif t.type_op == 'don' %}
+                                    <span class="badge bg-success text-white p-2">
+                                        <i class="fas fa-gift"></i> Don
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary text-white p-2">
+                                        <i class="fas fa-exchange-alt"></i> {{ t.type_op | capitalize }}
+                                    </span>
+                                {% endif %}
+                                {% if t.subtype %}
+                                    <br><small class="text-muted ms-1">{{ t.subtype }}</small>
+                                {% endif %}
+                            </td>
+
+                            <!-- 2. MEMBRE / DONATEUR -->
+                            <td>
+                                <strong>{{ t.membre or 'N/A' }}</strong>
+                            </td>
+
+                            <!-- 3. DATE -->
+                            <td>
+                                {% if t.date_op %}
+                                    {{ t.date_op.strftime('%d/%m/%Y') }}
+                                {% else %}
+                                    <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+
+                            <!-- 4. MONTANT -->
+                            <td class="text-end fw-bold {% if t.signe == '+' %}text-success{% else %}text-danger{% endif %}">
+                                {{ t.signe }} {{ "{:,.0f}".format(t.montant) }} FCFA
+                            </td>
+
+                            <!-- 5. STATUT -->
+                            <td class="text-center">
+                                {% if t.statut and t.statut|lower in ['en_attente', 'en attente'] %}
+                                    <form action="{{ url_for('valider_cotisation', id=t.id) }}" method="POST" class="d-inline">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <button type="submit" class="btn btn-sm btn-success" title="Confirmer la réception du paiement">
+                                            <i class="fas fa-check-circle"></i> Valider
+                                        </button>
+                                    </form>
+                                {% elif t.statut and t.statut|lower in ['paye', 'recu', 'versee', 'validee', 'accordee'] %}
+                                    <span class="badge bg-success"><i class="fas fa-check"></i> {{ t.statut }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ t.statut or '—' }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                                Aucune transaction récente enregistrée.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Données JSON pour les graphiques -->
+{% if monthly_flow %}
+<script id="monthlyFlowData" type="application/json">
+    {{ monthly_flow | tojson }}
+</script>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js doit être chargé EN PREMIER -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // ── Graphique Donut (Finances) ──────────────────────────────────
+        const ctxDonut = document.getElementById('financeChart');
+    if (ctxDonut) {
+        new Chart(ctxDonut.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Entrées', 'Sorties', 'Solde'],
+                datasets: [{
+                    // FIX: Added the missing comma at the end of this line ↓
+                    data: [
+                        Number("{{ total_entrees }}"), 
+                        Number("{{ total_sorties }}"), 
+                        Number("{{ solde_caisse }}")
+                    ], 
+                    backgroundColor: [
+                        'rgba(52, 152, 219, 0.8)',
+                        'rgba(231, 76, 60, 0.8)',
+                        'rgba(39, 174, 96, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(52, 152, 219, 1)',
+                        'rgba(231, 76, 60, 1)',
+                        'rgba(39, 174, 96, 1)'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { 
+                        position: 'bottom', 
+                        labels: { 
+                            padding: 20, 
+                            font: { size: 14 } 
+                        } 
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                // context.parsed is correct for Chart.js v3 and v4
+                                let label = context.label || '';
+                                let value = context.parsed || 0;
+                                return label + ': ' + value.toFixed(2) + ' FCFA';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+        // ── Graphique Barres (Flux mensuels) ───────────────────────────
+        const flowEl = document.getElementById('monthlyFlowData');
+        const canvas  = document.getElementById('flowChart');
+        if (!flowEl || !canvas) return;
+
+        const monthlyFlow = JSON.parse(flowEl.textContent);
+        if (!monthlyFlow || !monthlyFlow.length) return;
+
+        new Chart(canvas.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: monthlyFlow.map(d => d.label_fr),
+                datasets: [
+                    {
+                        label: 'Entrées',
+                        data: monthlyFlow.map(d => d.total_entrees),
+                        backgroundColor: 'rgba(39, 174, 96, 0.8)',
+                        borderColor: 'rgba(39, 174, 96, 1)',
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Sorties',
+                        data: monthlyFlow.map(d => d.total_sorties),
+                        backgroundColor: 'rgba(231, 76, 60, 0.8)',
+                        borderColor: 'rgba(231, 76, 60, 1)',
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Solde',
+                        type: 'line',
+                        data: monthlyFlow.map(d => d.solde),
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(c) {
+                                return c.dataset.label + ': ' + c.parsed.y.toFixed(2) + ' FCFA              ';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { callback: v => v + ' FCFA' }
+                    }
+                }
+            }
+        });
+
+    });
+</script>
+{% endblock %}

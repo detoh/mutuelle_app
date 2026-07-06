@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+{% block title %}Membres en Retard - Mutuelle Solidaire{% endblock %}
+
+{% block content %}
+<div class="page-header bg-warning text-dark py-4 mb-4">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="mb-1">
+                    <i class="fas fa-exclamation-triangle"></i> Membres en Retard de Cotisation
+                </h1>
+                <p class="mb-0 opacity-75">
+                    Membres actifs sans cotisation depuis au moins {{ mois }} mois
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <!-- Filtre par nombre de mois -->
+                <form method="GET" class="d-inline-flex align-items-center gap-2">
+                    <input type="hidden" name="page" value="1">
+                    <input type="hidden" name="recherche" value="{{ recherche or '' }}">
+                    <label class="fw-semibold mb-0 small">Retard ≥</label>
+                    <select name="mois" class="form-select form-select-sm" style="width:auto"
+                        onchange="this.form.submit()">
+                        {% for m in [1, 2, 3, 6] %}
+                        <option value="{{ m }}" {% if m == mois %}selected{% endif %}>
+                            {{ m }} mois{% if m == mois_defaut %} (recommandé){% endif %}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- KPI -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-warning text-center p-3 shadow-sm">
+                <i class="fas fa-users fa-2x text-warning mb-2"></i>
+                <h3 class="fw-bold text-warning">{{ nb_retard }}</h3>
+                <small class="text-muted">Membres en retard</small>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-danger text-center p-3 shadow-sm">
+                <i class="fas fa-calendar-times fa-2x text-danger mb-2"></i>
+                <h3 class="fw-bold text-danger">{{ mois }}</h3>
+                <small class="text-muted">Mois de retard minimum</small>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-info text-center p-3 shadow-sm">
+                <i class="fas fa-envelope fa-2x text-info mb-2"></i>
+                <h3 class="fw-bold text-info">
+                    {{ retardataires | selectattr('email') | list | length }}
+                </h3>
+                <small class="text-muted">Avec email (relance possible)</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recherche -->
+    <div class="card shadow-sm mb-3">
+        <div class="card-body py-3">
+            <form method="GET" class="row g-2 align-items-center">
+                <input type="hidden" name="mois" value="{{ mois }}">
+                <div class="col-md-8">
+                    <input type="text" name="recherche" class="form-control"
+                           placeholder="Rechercher un membre (nom ou prénom)..." value="{{ recherche or '' }}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search"></i> Rechercher
+                    </button>
+                </div>
+                <div class="col-md-2">
+                    <a href="{{ url_for('membres_en_retard', mois=mois) }}" class="btn btn-outline-secondary w-100">
+                        <i class="fas fa-times"></i> Réinitialiser
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tableau -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold">
+                <i class="fas fa-list text-warning"></i>
+                Liste des {{ nb_filtres }} membre(s) en retard
+            </h5>
+            <a href="{{ url_for('membres_en_retard', mois=mois, recherche=recherche) }}"
+               class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-sync"></i> Actualiser
+            </a>
+        </div>
+        <div class="card-body p-0">
+            {% if retardataires %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="py-3">N°</th>
+                            <th class="py-3">Membre</th>
+                            <th class="py-3">Email</th>
+                            <th class="py-3">Téléphone</th>
+                            <th class="py-3">Dernière cotisation</th>
+                            <th class="py-3">Retard</th>
+                            <th class="py-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in retardataires %}
+                        <tr class="{{ 'table-danger' if r.mois_sans_cotisation and r.mois_sans_cotisation >= 6 else 'table-warning' if r.mois_sans_cotisation and r.mois_sans_cotisation >= 3 else '' }}">
+                            <td class="py-2 text-muted small">{{ loop.index }}</td>
+                            <td class="py-2 fw-semibold">{{ r.nom_complet }}</td>
+                            <td class="py-2">
+                                {% if r.email %}
+                                <a href="mailto:{{ r.email }}" class="text-decoration-none">
+                                    {{ r.email }}
+                                </a>
+                                {% else %}
+                                <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-2">{{ r.telephone or '—' }}</td>
+                            <td class="py-2">
+                                {% if r.derniere_cotisation %}
+                                    {{ r.derniere_cotisation.strftime('%d/%m/%Y') if r.derniere_cotisation else '—' }}
+                                {% else %}
+                                    <span class="badge bg-danger">Jamais cotisé</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-2">
+                                {% if r.mois_sans_cotisation %}
+                                <span class="badge bg-{{ 'danger' if r.mois_sans_cotisation >= 6 else 'warning text-dark' }}">
+                                    {{ r.mois_sans_cotisation }} mois
+                                </span>
+                                {% else %}
+                                <span class="badge bg-danger">Inconnu</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-2">
+                                <a href="{{ url_for('detail_membre', id=r.membre_id) }}"
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                {% if r.email %}
+                                <a href="mailto:{{ r.email }}?subject=Rappel cotisation - Mutuelle Solidaire&body=Bonjour {{ r.nom_complet }},%0A%0ANous vous rappelons que votre cotisation est en retard depuis {{ r.mois_sans_cotisation or '?' }} mois.%0A%0AMerci de régulariser votre situation.%0A%0ACordialement,%0AL'équipe Mutuelle Solidaire"
+                                   class="btn btn-sm btn-outline-info">
+                                    <i class="fas fa-envelope"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5 text-muted">
+                <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+                <h5 class="text-success">Aucun membre en retard !</h5>
+                <p>Tous les membres actifs sont à jour de leur cotisation.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if total_pages > 1 %}
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            <small class="text-muted">Page {{ page }} sur {{ total_pages }}</small>
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item {{ 'disabled' if page <= 1 }}">
+                        <a class="page-link" href="{{ url_for('membres_en_retard', mois=mois, recherche=recherche, page=page-1) }}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% for p in range(1, total_pages + 1) %}
+                        {% if p == 1 or p == total_pages or (p >= page - 2 and p <= page + 2) %}
+                        <li class="page-item {{ 'active' if p == page }}">
+                            <a class="page-link" href="{{ url_for('membres_en_retard', mois=mois, recherche=recherche, page=p) }}">{{ p }}</a>
+                        </li>
+                        {% elif p == page - 3 or p == page + 3 %}
+                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                        {% endif %}
+                    {% endfor %}
+                    <li class="page-item {{ 'disabled' if page >= total_pages }}">
+                        <a class="page-link" href="{{ url_for('membres_en_retard', mois=mois, recherche=recherche, page=page+1) }}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+
+        {% if retardataires %}
+        <div class="card-footer bg-white">
+            <div class="row">
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        <span class="badge bg-warning text-dark me-1">■</span> Retard 1-5 mois &nbsp;
+                        <span class="badge bg-danger me-1">■</span> Retard ≥ 6 mois
+                    </small>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="{{ url_for('ajouter_cotisation') }}" class="btn btn-sm btn-success">
+                        <i class="fas fa-plus"></i> Enregistrer une cotisation
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

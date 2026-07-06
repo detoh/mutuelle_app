@@ -1,0 +1,1142 @@
+2026-05-25 13:31:55,567 - __main__ - INFO - ============================================================
+2026-05-25 13:31:55,568 - __main__ - INFO - 🚀 MUTUELLE SOLIDAIRE - PRODUCTION
+2026-05-25 13:31:55,569 - __main__ - INFO - ============================================================
+2026-05-25 13:31:55,571 - __main__ - INFO - 📁 Dossier: C:\mutuelle_app
+2026-05-25 13:31:55,572 - __main__ - INFO - 🌐 URL: http://0.0.0.0:8000
+2026-05-25 13:31:55,572 - __main__ - INFO - 🧵 Threads: 4
+2026-05-25 13:31:55,573 - __main__ - INFO - 🔗 Connections: 100
+2026-05-25 13:31:55,573 - __main__ - INFO - ============================================================
+2026-05-25 13:31:55,581 - waitress - INFO - Serving on http://0.0.0.0:8000
+2026-05-25 13:44:45,269 - __main__ - INFO - ============================================================
+2026-05-25 13:44:45,270 - __main__ - INFO - 🚀 MUTUELLE SOLIDAIRE - PRODUCTION
+2026-05-25 13:44:45,270 - __main__ - INFO - ============================================================
+2026-05-25 13:44:45,270 - __main__ - INFO - 📁 Dossier: C:\mutuelle_app
+2026-05-25 13:44:45,270 - __main__ - INFO - 🌐 URL: http://0.0.0.0:8000
+2026-05-25 13:44:45,270 - __main__ - INFO - 🧵 Threads: 4
+2026-05-25 13:44:45,270 - __main__ - INFO - 🔗 Connections: 100
+2026-05-25 13:44:45,271 - __main__ - INFO - ============================================================
+2026-05-25 13:44:45,276 - waitress - INFO - Serving on http://0.0.0.0:8000
+2026-05-25 13:48:06,559 - __main__ - INFO - ============================================================
+2026-05-25 13:48:06,560 - __main__ - INFO - 🚀 MUTUELLE SOLIDAIRE - PRODUCTION
+2026-05-25 13:48:06,561 - __main__ - INFO - ============================================================
+2026-05-25 13:48:06,562 - __main__ - INFO - 📁 Dossier: C:\mutuelle_app
+2026-05-25 13:48:06,563 - __main__ - INFO - 🌐 URL: http://0.0.0.0:8000
+2026-05-25 13:48:06,563 - __main__ - INFO - 🧵 Threads: 4
+2026-05-25 13:48:06,564 - __main__ - INFO - 🔗 Connections: 100
+2026-05-25 13:48:06,564 - __main__ - INFO - ============================================================
+2026-05-25 13:48:06,570 - waitress - INFO - Serving on http://0.0.0.0:8000
+2026-05-25 14:09:36,381 - app - ERROR - Exception on /comptable [GET]
+Traceback (most recent call last):
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.FeatureNotSupported: ERREUR:  clause UNION/INTERSECT/EXCEPT ORDER BY invalide
+LINE 46:     ORDER BY date_op DESC
+                      ^
+DETAIL:  Seuls les noms de colonnes résultats peuvent être utilisés, pas les
+expressions et les fonctions.
+HINT:  Ajouter l'expression/fonction à chaque SELECT, ou déplacer l'UNION dans une clause FROM.
+QUERY:  SELECT 'cotisation'::TEXT,
+           c.type_cotisation::TEXT,
+           (m.nom || ' ' || m.prenom)::TEXT,
+           c.montant,
+           '+'::TEXT,
+           c.date_paiement
+    FROM cotisations c
+    JOIN membres m ON m.id = c.membre_id
+    WHERE c.statut = 'PayÃ©'
+
+    UNION ALL
+
+    -- Aides
+    SELECT 'aide'::TEXT,
+           a.type_aide::TEXT,
+           (m.nom || ' ' || m.prenom)::TEXT,
+           a.montant,
+           '-'::TEXT,
+           a.date_attribution
+    FROM aides a
+    JOIN membres m ON m.id = a.membre_id
+
+    UNION ALL
+
+    -- Dons
+    SELECT 'don'::TEXT,
+           'Don externe'::TEXT,
+           d.donateur_nom::TEXT,
+           d.montant,
+           '+'::TEXT,
+           d.date
+    FROM dons d
+
+    UNION ALL
+
+    -- Ã‰vÃ©nements (dÃ©penses)
+    SELECT 'evenement'::TEXT,
+           e.nom::TEXT,
+           NULL::TEXT,
+           e.depenses_reelles,
+           '-'::TEXT,
+           e.date
+    FROM evenements e
+    WHERE e.depenses_reelles > 0
+
+    ORDER BY date_op DESC
+    LIMIT p_limit
+CONTEXT:  fonction PL/pgSQL fn_transactions_recentes(integer), ligne 3 à RETURN QUERY
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 1455, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 869, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 867, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 852, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\mutuelle_app\app.py", line 58, in decorated_function
+    return f(*args, **kwargs)
+  File "C:\mutuelle_app\app.py", line 609, in dashboard_comptable
+    recent_transactions   = get_recent_transactions(limit=20)
+  File "C:\mutuelle_app\models.py", line 312, in get_recent_transactions
+    rows = db.session.execute(
+           ~~~~~~~~~~~~~~~~~~^
+        text("SELECT * FROM fn_transactions_recentes(:limit)"),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        {'limit': limit}
+        ^^^^^^^^^^^^^^^^
+    ).fetchall()
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\scoping.py", line 765, in execute
+    return self._proxied.execute(
+           ~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2351, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2258, in _execute_internal
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.NotSupportedError: (psycopg2.errors.FeatureNotSupported) ERREUR:  clause UNION/INTERSECT/EXCEPT ORDER BY invalide
+LINE 46:     ORDER BY date_op DESC
+                      ^
+DETAIL:  Seuls les noms de colonnes résultats peuvent être utilisés, pas les
+expressions et les fonctions.
+HINT:  Ajouter l'expression/fonction à chaque SELECT, ou déplacer l'UNION dans une clause FROM.
+QUERY:  SELECT 'cotisation'::TEXT,
+           c.type_cotisation::TEXT,
+           (m.nom || ' ' || m.prenom)::TEXT,
+           c.montant,
+           '+'::TEXT,
+           c.date_paiement
+    FROM cotisations c
+    JOIN membres m ON m.id = c.membre_id
+    WHERE c.statut = 'PayÃ©'
+
+    UNION ALL
+
+    -- Aides
+    SELECT 'aide'::TEXT,
+           a.type_aide::TEXT,
+           (m.nom || ' ' || m.prenom)::TEXT,
+           a.montant,
+           '-'::TEXT,
+           a.date_attribution
+    FROM aides a
+    JOIN membres m ON m.id = a.membre_id
+
+    UNION ALL
+
+    -- Dons
+    SELECT 'don'::TEXT,
+           'Don externe'::TEXT,
+           d.donateur_nom::TEXT,
+           d.montant,
+           '+'::TEXT,
+           d.date
+    FROM dons d
+
+    UNION ALL
+
+    -- Ã‰vÃ©nements (dÃ©penses)
+    SELECT 'evenement'::TEXT,
+           e.nom::TEXT,
+           NULL::TEXT,
+           e.depenses_reelles,
+           '-'::TEXT,
+           e.date
+    FROM evenements e
+    WHERE e.depenses_reelles > 0
+
+    ORDER BY date_op DESC
+    LIMIT p_limit
+CONTEXT:  fonction PL/pgSQL fn_transactions_recentes(integer), ligne 3 à RETURN QUERY
+
+[SQL: SELECT * FROM fn_transactions_recentes(%(limit)s)]
+[parameters: {'limit': 20}]
+(Background on this error at: https://sqlalche.me/e/20/tw8g)
+2026-05-25 14:09:47,471 - app - ERROR - Exception on /comptable/transactions [GET]
+Traceback (most recent call last):
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.FeatureNotSupported: ERREUR:  clause UNION/INTERSECT/EXCEPT ORDER BY invalide
+LINE 46:     ORDER BY date_op DESC
+                      ^
+DETAIL:  Seuls les noms de colonnes résultats peuvent être utilisés, pas les
+expressions et les fonctions.
+HINT:  Ajouter l'expression/fonction à chaque SELECT, ou déplacer l'UNION dans une clause FROM.
+QUERY:  SELECT 'cotisation'::TEXT,
+           c.type_cotisation::TEXT,
+           (m.nom || ' ' || m.prenom)::TEXT,
+           c.montant,
+           '+'::TEXT,
+           c.date_paiement
+    FROM cotisations c
+    JOIN membres m ON m.id = c.membre_id
+    WHERE c.statut = 'PayÃ©'
+
+    UNION ALL
+
+    -- Aides
+    SELECT 'aide'::TEXT,
+           a.type_aide::TEXT,
+           (m.nom || ' ' || m.prenom)::TEXT,
+           a.montant,
+           '-'::TEXT,
+           a.date_attribution
+    FROM aides a
+    JOIN membres m ON m.id = a.membre_id
+
+    UNION ALL
+
+    -- Dons
+    SELECT 'don'::TEXT,
+           'Don externe'::TEXT,
+           d.donateur_nom::TEXT,
+           d.montant,
+           '+'::TEXT,
+           d.date
+    FROM dons d
+
+    UNION ALL
+
+    -- Ã‰vÃ©nements (dÃ©penses)
+    SELECT 'evenement'::TEXT,
+           e.nom::TEXT,
+           NULL::TEXT,
+           e.depenses_reelles,
+           '-'::TEXT,
+           e.date
+    FROM evenements e
+    WHERE e.depenses_reelles > 0
+
+    ORDER BY date_op DESC
+    LIMIT p_limit
+CONTEXT:  fonction PL/pgSQL fn_transactions_recentes(integer), ligne 3 à RETURN QUERY
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 1455, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 869, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 867, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 852, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\mutuelle_app\app.py", line 58, in decorated_function
+    return f(*args, **kwargs)
+  File "C:\mutuelle_app\app.py", line 637, in transactions_comptable
+    all_transactions  = get_recent_transactions(limit=500)
+  File "C:\mutuelle_app\models.py", line 312, in get_recent_transactions
+    rows = db.session.execute(
+           ~~~~~~~~~~~~~~~~~~^
+        text("SELECT * FROM fn_transactions_recentes(:limit)"),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        {'limit': limit}
+        ^^^^^^^^^^^^^^^^
+    ).fetchall()
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\scoping.py", line 765, in execute
+    return self._proxied.execute(
+           ~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2351, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2258, in _execute_internal
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.NotSupportedError: (psycopg2.errors.FeatureNotSupported) ERREUR:  clause UNION/INTERSECT/EXCEPT ORDER BY invalide
+LINE 46:     ORDER BY date_op DESC
+                      ^
+DETAIL:  Seuls les noms de colonnes résultats peuvent être utilisés, pas les
+expressions et les fonctions.
+HINT:  Ajouter l'expression/fonction à chaque SELECT, ou déplacer l'UNION dans une clause FROM.
+QUERY:  SELECT 'cotisation'::TEXT,
+           c.type_cotisation::TEXT,
+           (m.nom || ' ' || m.prenom)::TEXT,
+           c.montant,
+           '+'::TEXT,
+           c.date_paiement
+    FROM cotisations c
+    JOIN membres m ON m.id = c.membre_id
+    WHERE c.statut = 'PayÃ©'
+
+    UNION ALL
+
+    -- Aides
+    SELECT 'aide'::TEXT,
+           a.type_aide::TEXT,
+           (m.nom || ' ' || m.prenom)::TEXT,
+           a.montant,
+           '-'::TEXT,
+           a.date_attribution
+    FROM aides a
+    JOIN membres m ON m.id = a.membre_id
+
+    UNION ALL
+
+    -- Dons
+    SELECT 'don'::TEXT,
+           'Don externe'::TEXT,
+           d.donateur_nom::TEXT,
+           d.montant,
+           '+'::TEXT,
+           d.date
+    FROM dons d
+
+    UNION ALL
+
+    -- Ã‰vÃ©nements (dÃ©penses)
+    SELECT 'evenement'::TEXT,
+           e.nom::TEXT,
+           NULL::TEXT,
+           e.depenses_reelles,
+           '-'::TEXT,
+           e.date
+    FROM evenements e
+    WHERE e.depenses_reelles > 0
+
+    ORDER BY date_op DESC
+    LIMIT p_limit
+CONTEXT:  fonction PL/pgSQL fn_transactions_recentes(integer), ligne 3 à RETURN QUERY
+
+[SQL: SELECT * FROM fn_transactions_recentes(%(limit)s)]
+[parameters: {'limit': 500}]
+(Background on this error at: https://sqlalche.me/e/20/tw8g)
+2026-05-25 14:11:22,496 - app - ERROR - Exception on /comptable [GET]
+Traceback (most recent call last):
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.FeatureNotSupported: ERREUR:  clause UNION/INTERSECT/EXCEPT ORDER BY invalide
+LINE 46:     ORDER BY date_op DESC
+                      ^
+DETAIL:  Seuls les noms de colonnes résultats peuvent être utilisés, pas les
+expressions et les fonctions.
+HINT:  Ajouter l'expression/fonction à chaque SELECT, ou déplacer l'UNION dans une clause FROM.
+QUERY:  SELECT 'cotisation'::TEXT,
+           c.type_cotisation::TEXT,
+           (m.nom || ' ' || m.prenom)::TEXT,
+           c.montant,
+           '+'::TEXT,
+           c.date_paiement
+    FROM cotisations c
+    JOIN membres m ON m.id = c.membre_id
+    WHERE c.statut = 'PayÃ©'
+
+    UNION ALL
+
+    -- Aides
+    SELECT 'aide'::TEXT,
+           a.type_aide::TEXT,
+           (m.nom || ' ' || m.prenom)::TEXT,
+           a.montant,
+           '-'::TEXT,
+           a.date_attribution
+    FROM aides a
+    JOIN membres m ON m.id = a.membre_id
+
+    UNION ALL
+
+    -- Dons
+    SELECT 'don'::TEXT,
+           'Don externe'::TEXT,
+           d.donateur_nom::TEXT,
+           d.montant,
+           '+'::TEXT,
+           d.date
+    FROM dons d
+
+    UNION ALL
+
+    -- Ã‰vÃ©nements (dÃ©penses)
+    SELECT 'evenement'::TEXT,
+           e.nom::TEXT,
+           NULL::TEXT,
+           e.depenses_reelles,
+           '-'::TEXT,
+           e.date
+    FROM evenements e
+    WHERE e.depenses_reelles > 0
+
+    ORDER BY date_op DESC
+    LIMIT p_limit
+CONTEXT:  fonction PL/pgSQL fn_transactions_recentes(integer), ligne 3 à RETURN QUERY
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 1455, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 869, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 867, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 852, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\mutuelle_app\app.py", line 58, in decorated_function
+    return f(*args, **kwargs)
+  File "C:\mutuelle_app\app.py", line 609, in dashboard_comptable
+    recent_transactions   = get_recent_transactions(limit=20)
+  File "C:\mutuelle_app\models.py", line 312, in get_recent_transactions
+    rows = db.session.execute(
+           ~~~~~~~~~~~~~~~~~~^
+        text("SELECT * FROM fn_transactions_recentes(:limit)"),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        {'limit': limit}
+        ^^^^^^^^^^^^^^^^
+    ).fetchall()
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\scoping.py", line 765, in execute
+    return self._proxied.execute(
+           ~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2351, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2258, in _execute_internal
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.NotSupportedError: (psycopg2.errors.FeatureNotSupported) ERREUR:  clause UNION/INTERSECT/EXCEPT ORDER BY invalide
+LINE 46:     ORDER BY date_op DESC
+                      ^
+DETAIL:  Seuls les noms de colonnes résultats peuvent être utilisés, pas les
+expressions et les fonctions.
+HINT:  Ajouter l'expression/fonction à chaque SELECT, ou déplacer l'UNION dans une clause FROM.
+QUERY:  SELECT 'cotisation'::TEXT,
+           c.type_cotisation::TEXT,
+           (m.nom || ' ' || m.prenom)::TEXT,
+           c.montant,
+           '+'::TEXT,
+           c.date_paiement
+    FROM cotisations c
+    JOIN membres m ON m.id = c.membre_id
+    WHERE c.statut = 'PayÃ©'
+
+    UNION ALL
+
+    -- Aides
+    SELECT 'aide'::TEXT,
+           a.type_aide::TEXT,
+           (m.nom || ' ' || m.prenom)::TEXT,
+           a.montant,
+           '-'::TEXT,
+           a.date_attribution
+    FROM aides a
+    JOIN membres m ON m.id = a.membre_id
+
+    UNION ALL
+
+    -- Dons
+    SELECT 'don'::TEXT,
+           'Don externe'::TEXT,
+           d.donateur_nom::TEXT,
+           d.montant,
+           '+'::TEXT,
+           d.date
+    FROM dons d
+
+    UNION ALL
+
+    -- Ã‰vÃ©nements (dÃ©penses)
+    SELECT 'evenement'::TEXT,
+           e.nom::TEXT,
+           NULL::TEXT,
+           e.depenses_reelles,
+           '-'::TEXT,
+           e.date
+    FROM evenements e
+    WHERE e.depenses_reelles > 0
+
+    ORDER BY date_op DESC
+    LIMIT p_limit
+CONTEXT:  fonction PL/pgSQL fn_transactions_recentes(integer), ligne 3 à RETURN QUERY
+
+[SQL: SELECT * FROM fn_transactions_recentes(%(limit)s)]
+[parameters: {'limit': 20}]
+(Background on this error at: https://sqlalche.me/e/20/tw8g)
+2026-05-25 14:11:26,167 - app - ERROR - Exception on /comptable [GET]
+Traceback (most recent call last):
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.FeatureNotSupported: ERREUR:  clause UNION/INTERSECT/EXCEPT ORDER BY invalide
+LINE 46:     ORDER BY date_op DESC
+                      ^
+DETAIL:  Seuls les noms de colonnes résultats peuvent être utilisés, pas les
+expressions et les fonctions.
+HINT:  Ajouter l'expression/fonction à chaque SELECT, ou déplacer l'UNION dans une clause FROM.
+QUERY:  SELECT 'cotisation'::TEXT,
+           c.type_cotisation::TEXT,
+           (m.nom || ' ' || m.prenom)::TEXT,
+           c.montant,
+           '+'::TEXT,
+           c.date_paiement
+    FROM cotisations c
+    JOIN membres m ON m.id = c.membre_id
+    WHERE c.statut = 'PayÃ©'
+
+    UNION ALL
+
+    -- Aides
+    SELECT 'aide'::TEXT,
+           a.type_aide::TEXT,
+           (m.nom || ' ' || m.prenom)::TEXT,
+           a.montant,
+           '-'::TEXT,
+           a.date_attribution
+    FROM aides a
+    JOIN membres m ON m.id = a.membre_id
+
+    UNION ALL
+
+    -- Dons
+    SELECT 'don'::TEXT,
+           'Don externe'::TEXT,
+           d.donateur_nom::TEXT,
+           d.montant,
+           '+'::TEXT,
+           d.date
+    FROM dons d
+
+    UNION ALL
+
+    -- Ã‰vÃ©nements (dÃ©penses)
+    SELECT 'evenement'::TEXT,
+           e.nom::TEXT,
+           NULL::TEXT,
+           e.depenses_reelles,
+           '-'::TEXT,
+           e.date
+    FROM evenements e
+    WHERE e.depenses_reelles > 0
+
+    ORDER BY date_op DESC
+    LIMIT p_limit
+CONTEXT:  fonction PL/pgSQL fn_transactions_recentes(integer), ligne 3 à RETURN QUERY
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 1455, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 869, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 867, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 852, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\mutuelle_app\app.py", line 58, in decorated_function
+    return f(*args, **kwargs)
+  File "C:\mutuelle_app\app.py", line 609, in dashboard_comptable
+    recent_transactions   = get_recent_transactions(limit=20)
+  File "C:\mutuelle_app\models.py", line 312, in get_recent_transactions
+    rows = db.session.execute(
+           ~~~~~~~~~~~~~~~~~~^
+        text("SELECT * FROM fn_transactions_recentes(:limit)"),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        {'limit': limit}
+        ^^^^^^^^^^^^^^^^
+    ).fetchall()
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\scoping.py", line 765, in execute
+    return self._proxied.execute(
+           ~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2351, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2258, in _execute_internal
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.NotSupportedError: (psycopg2.errors.FeatureNotSupported) ERREUR:  clause UNION/INTERSECT/EXCEPT ORDER BY invalide
+LINE 46:     ORDER BY date_op DESC
+                      ^
+DETAIL:  Seuls les noms de colonnes résultats peuvent être utilisés, pas les
+expressions et les fonctions.
+HINT:  Ajouter l'expression/fonction à chaque SELECT, ou déplacer l'UNION dans une clause FROM.
+QUERY:  SELECT 'cotisation'::TEXT,
+           c.type_cotisation::TEXT,
+           (m.nom || ' ' || m.prenom)::TEXT,
+           c.montant,
+           '+'::TEXT,
+           c.date_paiement
+    FROM cotisations c
+    JOIN membres m ON m.id = c.membre_id
+    WHERE c.statut = 'PayÃ©'
+
+    UNION ALL
+
+    -- Aides
+    SELECT 'aide'::TEXT,
+           a.type_aide::TEXT,
+           (m.nom || ' ' || m.prenom)::TEXT,
+           a.montant,
+           '-'::TEXT,
+           a.date_attribution
+    FROM aides a
+    JOIN membres m ON m.id = a.membre_id
+
+    UNION ALL
+
+    -- Dons
+    SELECT 'don'::TEXT,
+           'Don externe'::TEXT,
+           d.donateur_nom::TEXT,
+           d.montant,
+           '+'::TEXT,
+           d.date
+    FROM dons d
+
+    UNION ALL
+
+    -- Ã‰vÃ©nements (dÃ©penses)
+    SELECT 'evenement'::TEXT,
+           e.nom::TEXT,
+           NULL::TEXT,
+           e.depenses_reelles,
+           '-'::TEXT,
+           e.date
+    FROM evenements e
+    WHERE e.depenses_reelles > 0
+
+    ORDER BY date_op DESC
+    LIMIT p_limit
+CONTEXT:  fonction PL/pgSQL fn_transactions_recentes(integer), ligne 3 à RETURN QUERY
+
+[SQL: SELECT * FROM fn_transactions_recentes(%(limit)s)]
+[parameters: {'limit': 20}]
+(Background on this error at: https://sqlalche.me/e/20/tw8g)
+2026-05-25 14:11:39,594 - app - ERROR - Exception on /comptable/transactions [GET]
+Traceback (most recent call last):
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.FeatureNotSupported: ERREUR:  clause UNION/INTERSECT/EXCEPT ORDER BY invalide
+LINE 46:     ORDER BY date_op DESC
+                      ^
+DETAIL:  Seuls les noms de colonnes résultats peuvent être utilisés, pas les
+expressions et les fonctions.
+HINT:  Ajouter l'expression/fonction à chaque SELECT, ou déplacer l'UNION dans une clause FROM.
+QUERY:  SELECT 'cotisation'::TEXT,
+           c.type_cotisation::TEXT,
+           (m.nom || ' ' || m.prenom)::TEXT,
+           c.montant,
+           '+'::TEXT,
+           c.date_paiement
+    FROM cotisations c
+    JOIN membres m ON m.id = c.membre_id
+    WHERE c.statut = 'PayÃ©'
+
+    UNION ALL
+
+    -- Aides
+    SELECT 'aide'::TEXT,
+           a.type_aide::TEXT,
+           (m.nom || ' ' || m.prenom)::TEXT,
+           a.montant,
+           '-'::TEXT,
+           a.date_attribution
+    FROM aides a
+    JOIN membres m ON m.id = a.membre_id
+
+    UNION ALL
+
+    -- Dons
+    SELECT 'don'::TEXT,
+           'Don externe'::TEXT,
+           d.donateur_nom::TEXT,
+           d.montant,
+           '+'::TEXT,
+           d.date
+    FROM dons d
+
+    UNION ALL
+
+    -- Ã‰vÃ©nements (dÃ©penses)
+    SELECT 'evenement'::TEXT,
+           e.nom::TEXT,
+           NULL::TEXT,
+           e.depenses_reelles,
+           '-'::TEXT,
+           e.date
+    FROM evenements e
+    WHERE e.depenses_reelles > 0
+
+    ORDER BY date_op DESC
+    LIMIT p_limit
+CONTEXT:  fonction PL/pgSQL fn_transactions_recentes(integer), ligne 3 à RETURN QUERY
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 1455, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 869, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 867, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask\app.py", line 852, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\mutuelle_app\venv\Lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\mutuelle_app\app.py", line 58, in decorated_function
+    return f(*args, **kwargs)
+  File "C:\mutuelle_app\app.py", line 637, in transactions_comptable
+    all_transactions  = get_recent_transactions(limit=500)
+  File "C:\mutuelle_app\models.py", line 312, in get_recent_transactions
+    rows = db.session.execute(
+           ~~~~~~~~~~~~~~~~~~^
+        text("SELECT * FROM fn_transactions_recentes(:limit)"),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        {'limit': limit}
+        ^^^^^^^^^^^^^^^^
+    ).fetchall()
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\scoping.py", line 765, in execute
+    return self._proxied.execute(
+           ~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2351, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2258, in _execute_internal
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\mutuelle_app\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.NotSupportedError: (psycopg2.errors.FeatureNotSupported) ERREUR:  clause UNION/INTERSECT/EXCEPT ORDER BY invalide
+LINE 46:     ORDER BY date_op DESC
+                      ^
+DETAIL:  Seuls les noms de colonnes résultats peuvent être utilisés, pas les
+expressions et les fonctions.
+HINT:  Ajouter l'expression/fonction à chaque SELECT, ou déplacer l'UNION dans une clause FROM.
+QUERY:  SELECT 'cotisation'::TEXT,
+           c.type_cotisation::TEXT,
+           (m.nom || ' ' || m.prenom)::TEXT,
+           c.montant,
+           '+'::TEXT,
+           c.date_paiement
+    FROM cotisations c
+    JOIN membres m ON m.id = c.membre_id
+    WHERE c.statut = 'PayÃ©'
+
+    UNION ALL
+
+    -- Aides
+    SELECT 'aide'::TEXT,
+           a.type_aide::TEXT,
+           (m.nom || ' ' || m.prenom)::TEXT,
+           a.montant,
+           '-'::TEXT,
+           a.date_attribution
+    FROM aides a
+    JOIN membres m ON m.id = a.membre_id
+
+    UNION ALL
+
+    -- Dons
+    SELECT 'don'::TEXT,
+           'Don externe'::TEXT,
+           d.donateur_nom::TEXT,
+           d.montant,
+           '+'::TEXT,
+           d.date
+    FROM dons d
+
+    UNION ALL
+
+    -- Ã‰vÃ©nements (dÃ©penses)
+    SELECT 'evenement'::TEXT,
+           e.nom::TEXT,
+           NULL::TEXT,
+           e.depenses_reelles,
+           '-'::TEXT,
+           e.date
+    FROM evenements e
+    WHERE e.depenses_reelles > 0
+
+    ORDER BY date_op DESC
+    LIMIT p_limit
+CONTEXT:  fonction PL/pgSQL fn_transactions_recentes(integer), ligne 3 à RETURN QUERY
+
+[SQL: SELECT * FROM fn_transactions_recentes(%(limit)s)]
+[parameters: {'limit': 500}]
+(Background on this error at: https://sqlalche.me/e/20/tw8g)

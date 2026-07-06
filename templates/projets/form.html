@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}{{ titre }} - Mutuelle Solidaire{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white py-3">
+                    <h4 class="mb-0"><i class="fas fa-project-diagram"></i> {{ titre }}</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fas fa-tag"></i> Titre du Projet *</label>
+                            {{ form.titreprojet(class="form-control", placeholder="Ex: Construction salle communautaire") }}
+                            {% for error in form.titreprojet.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fas fa-align-left"></i> Description</label>
+                            {{ form.description(class="form-control", rows="4", placeholder="Décrivez le projet...") }}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold"><i class="fas fa-calendar"></i> Date de Début</label>
+                                {{ form.datedebut(class="form-control", type="date") }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold"><i class="fas fa-calendar-check"></i> Date de Fin</label>
+                                {{ form.datefiprojet(class="form-control", type="date") }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fas fa-coins"></i> Coût d'Exécution (FCFA)</label>
+                            {{ form.coutexecution(class="form-control", placeholder="0.00", step="0.01") }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fas fa-gift"></i> Nom du Donateur</label>
+                            {{ form.nomdonateur(class="form-control", placeholder="Nom de la personne ou organisation") }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fas fa-tasks"></i> Statut</label>
+                            {{ form.statut(class="form-select") }}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-primary btn-lg") }}
+                            <a href="{{ url_for('liste_projets') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Retour à la Liste
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

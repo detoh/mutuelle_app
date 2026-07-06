@@ -1,0 +1,35 @@
+2026-07-01 20:14:20,516 - __main__ - INFO - ============================================================
+2026-07-01 20:14:20,517 - __main__ - INFO - 🚀 MUTUELLE SOLIDAIRE - PRODUCTION
+2026-07-01 20:14:20,518 - __main__ - INFO - ============================================================
+2026-07-01 20:14:20,518 - __main__ - INFO - 📁 Dossier: C:\mutuelle_app
+2026-07-01 20:14:20,518 - __main__ - INFO - 🌐 URL: http://0.0.0.0:8000
+2026-07-01 20:14:20,518 - __main__ - INFO - 🧵 Threads: 4
+2026-07-01 20:14:20,518 - __main__ - INFO - 🔗 Connections: 100
+2026-07-01 20:14:20,519 - __main__ - INFO - ============================================================
+2026-07-01 20:14:20,527 - waitress - INFO - Serving on http://0.0.0.0:8000
+2026-07-01 21:54:34,391 - utils.notifications - INFO - ✅ Email envoyé à ['yapoassa18@gmail.com']: 🎉 Bienvenue à la Mutuelle Solidaire !
+2026-07-01 21:54:37,359 - utils.notifications - INFO - ✅ Email envoyé à ['assouakouafelix@gmail.com']: 🎉 Bienvenue à la Mutuelle Solidaire !
+2026-07-01 21:54:40,359 - utils.notifications - INFO - ✅ Email envoyé à ['alainb858@gmail.com']: 🎉 Bienvenue à la Mutuelle Solidaire !
+2026-07-01 21:54:43,149 - utils.notifications - INFO - ✅ Email envoyé à ['bolepone2@gmail.com']: 🎉 Bienvenue à la Mutuelle Solidaire !
+2026-07-01 21:54:46,097 - utils.notifications - INFO - ✅ Email envoyé à ['juliecoulmariame@gmail.com']: 🎉 Bienvenue à la Mutuelle Solidaire !
+2026-07-01 21:54:49,279 - utils.notifications - INFO - ✅ Email envoyé à ['douonmireillelydia@gmail.com']: 🎉 Bienvenue à la Mutuelle Solidaire !
+2026-07-01 21:54:52,229 - utils.notifications - INFO - ✅ Email envoyé à ['mohamedmariamdrame@gmail.com']: 🎉 Bienvenue à la Mutuelle Solidaire !
+2026-07-01 21:54:55,129 - utils.notifications - INFO - ✅ Email envoyé à ['aboubakarf5@gmail.com']: 🎉 Bienvenue à la Mutuelle Solidaire !
+2026-07-01 21:54:58,069 - utils.notifications - INFO - ✅ Email envoyé à ['fofanafoumba@yahoo.fr']: 🎉 Bienvenue à la Mutuelle Solidaire !
+2026-07-01 21:55:00,949 - utils.notifications - INFO - ✅ Email envoyé à ['koneinzatou@upgc.edu.ci']: 🎉 Bienvenue à la Mutuelle Solidaire !
+2026-07-01 21:55:03,788 - utils.notifications - INFO - ✅ Email envoyé à ['kaonaman@gmail.com']: 🎉 Bienvenue à la Mutuelle Solidaire !
+2026-07-01 21:55:06,750 - utils.notifications - INFO - ✅ Email envoyé à ['konenanoulinda@upgc.edu.ci']: 🎉 Bienvenue à la Mutuelle Solidaire !
+2026-07-01 21:55:09,839 - utils.notifications - INFO - ✅ Email envoyé à ['dramanechifolo@gmail.com']: 🎉 Bienvenue à la Mutuelle Solidaire !
+2026-07-01 21:55:12,630 - utils.notifications - INFO - ✅ Email envoyé à ['ahmedkone220@gmail.com']: 🎉 Bienvenue à la Mutuelle Solidaire !
+2026-07-01 21:55:15,539 - utils.notifications - INFO - ✅ Email envoyé à ['kouamedxy@gmail.com']: 🎉 Bienvenue à la Mutuelle Solidaire !
+2026-07-01 21:55:18,569 - utils.notifications - INFO - ✅ Email envoyé à ['kouassi.bonami@yahoo.fr']: 🎉 Bienvenue à la Mutuelle Solidaire !
+2026-07-01 21:55:21,589 - utils.notifications - INFO - ✅ Email envoyé à ['gbafouattara@gmail.com']: 🎉 Bienvenue à la Mutuelle Solidaire !
+2026-07-01 21:55:24,769 - utils.notifications - INFO - ✅ Email envoyé à ['sabineouattara@ymail.com']: 🎉 Bienvenue à la Mutuelle Solidaire !
+2026-07-01 21:55:27,729 - utils.notifications - INFO - ✅ Email envoyé à ['sientienhoin@gmail.com']: 🎉 Bienvenue à la Mutuelle Solidaire !
+2026-07-01 21:55:30,629 - utils.notifications - INFO - ✅ Email envoyé à ['palebatofrederic@gmail.com']: 🎉 Bienvenue à la Mutuelle Solidaire !
+2026-07-01 21:55:33,579 - utils.notifications - INFO - ✅ Email envoyé à ['siakakone058@gmail.com']: 🎉 Bienvenue à la Mutuelle Solidaire !
+2026-07-01 21:55:36,429 - utils.notifications - INFO - ✅ Email envoyé à ['soropambinulrich@gmail.com']: 🎉 Bienvenue à la Mutuelle Solidaire !
+2026-07-01 21:55:39,329 - utils.notifications - INFO - ✅ Email envoyé à ['touresiaka@upgc.edu.ci']: 🎉 Bienvenue à la Mutuelle Solidaire !
+2026-07-01 21:55:42,340 - utils.notifications - INFO - ✅ Email envoyé à ['tourenadia11@gmail.com']: 🎉 Bienvenue à la Mutuelle Solidaire !
+2026-07-01 21:55:45,329 - utils.notifications - INFO - ✅ Email envoyé à ['cheickfatim19@gmail.com']: 🎉 Bienvenue à la Mutuelle Solidaire !
+2026-07-01 21:55:48,429 - utils.notifications - INFO - ✅ Email envoyé à ['tourenibedaouda@upgc.edu.ci']: 🎉 Bienvenue à la Mutuelle Solidaire !

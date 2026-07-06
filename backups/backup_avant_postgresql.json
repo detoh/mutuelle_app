@@ -1,0 +1,185 @@
+{
+  "membres": [
+    {
+      "id": 0,
+      "nom": "Admin",
+      "prenom": "Principal",
+      "telephone": null,
+      "email": "admin@mutuelle.com",
+      "ville": null,
+      "password_hash": "scrypt:32768:8:1$1ZrN2vyNUMnkBChk$dabf5f7884176667c02e02913a074e9a64f38a0ec444e6f85f914967bfdfa7c2f7524ed9591db3b453e92f741b6fbb7c96fac617055c0862e7f9347c9ff1000e",
+      "date_adhesion": "2026-05-14 13:02:52.776823",
+      "statut": "Actif",
+      "is_admin": 1,
+      "fonction": null,
+      "photo": null,
+      "is_comptable": 0,
+      "service": null,
+      "emploi": null
+    },
+    {
+      "id": 2,
+      "nom": "DEGBE ",
+      "prenom": "Detoh P.",
+      "telephone": "+2250707238364",
+      "email": "patrickdetoh01@gmail.com",
+      "ville": null,
+      "password_hash": "scrypt:32768:8:1$ENByiROCamhyO35V$c66d736bc92786b2bb33983af7ae97e8d2889a976052ea3ca267c8aa7476af314ac77f369707c020f5316ad6c748b248f879986525889eaf86355ac56c39aa1f",
+      "date_adhesion": "2026-05-14 13:48:46.955399",
+      "statut": "Actif",
+      "is_admin": 0,
+      "fonction": null,
+      "photo": "uploads/photos/membre_2_20260514143142_DetohPat2.jpg",
+      "is_comptable": 1,
+      "service": null,
+      "emploi": null
+    },
+    {
+      "id": 3,
+      "nom": "MIKOSSOKPOR",
+      "prenom": "Akovi ",
+      "telephone": "+22507013100",
+      "email": "amikossokpor@gmail.com",
+      "ville": null,
+      "password_hash": "scrypt:32768:8:1$YgEiFxytPIKN1r9H$52ea1bf76eb123358c3863e32e7db311036bac3a8edfb22aa04dff501796eb8f5d9fa8c2ebe810e76bea4f370dd71ebbf2ee0ac6f8b1abfe4d494b353e1e4379",
+      "date_adhesion": "2026-05-18 14:39:29.107825",
+      "statut": "Actif",
+      "is_admin": 0,
+      "fonction": "membre",
+      "photo": null,
+      "is_comptable": 0,
+      "service": null,
+      "emploi": null
+    },
+    {
+      "id": 4,
+      "nom": "LETO",
+      "prenom": "BIANNEHE ROSINE",
+      "telephone": "+2250769059024",
+      "email": "rosineleto@gmail.com",
+      "ville": null,
+      "password_hash": "scrypt:32768:8:1$mYpfwrK3lFauue08$99dd45a317034b66f8648e3ddf1acf4aade6ac71a938947baf79db76cffbed7b9d25836ad8de7568113d07b365d67b887c626487f9cc52d089587231daa11b79",
+      "date_adhesion": "2026-01-01",
+      "statut": "Actif",
+      "is_admin": 0,
+      "fonction": null,
+      "photo": null,
+      "is_comptable": 0,
+      "service": null,
+      "emploi": null
+    },
+    {
+      "id": 5,
+      "nom": "KANTE",
+      "prenom": "BEN ISAAC",
+      "telephone": "+225 07 49 42 56 04",
+      "email": "benisaack84@gmail.com",
+      "ville": null,
+      "password_hash": "scrypt:32768:8:1$zhYVnOZcWDVr159r$a902e449b8246bfa05c1c86ebc5918f33d4cd9245843e8f01dafc9ef5a61dedde83152a0a73ba16e39c289211e99c102e54dabe992e2c842a71aa3dd0a6df89c",
+      "date_adhesion": "2026-01-01",
+      "statut": "Actif",
+      "is_admin": 0,
+      "fonction": null,
+      "photo": null,
+      "is_comptable": 0,
+      "service": null,
+      "emploi": null
+    },
+    {
+      "id": 6,
+      "nom": "DJE ",
+      "prenom": "BI TRA SIMON",
+      "telephone": "+255 0707742339",
+      "email": "simonvi7374@gmail.com",
+      "ville": null,
+      "password_hash": "scrypt:32768:8:1$fnRK5RnZWoL2Ggh7$e646410513e0037eb1e670db1455ce24bf91470e32ace4d829e0f531c2b7ed7710d37aa675980c462c809cb3a9bdcd80fdcdbdf2c02d986e29e6dd4c4947b3ca",
+      "date_adhesion": "2025-03-20",
+      "statut": "Actif",
+      "is_admin": 0,
+      "fonction": "Membre",
+      "photo": null,
+      "is_comptable": 0,
+      "service": "SRIT",
+      "emploi": "Assistant Informatique"
+    }
+  ],
+  "cotisations": [
+    {
+      "id": 1,
+      "membre_id": 2,
+      "type_cotisation": "Adhesion",
+      "montant": 5000.0,
+      "periode": "Janvier 2024",
+      "date_paiement": "2026-05-14 14:37:55.662096",
+      "statut": "PayÃ©"
+    },
+    {
+      "id": 2,
+      "membre_id": 2,
+      "type_cotisation": "Mensuelle",
+      "montant": 1000.0,
+      "periode": "03/04/2026",
+      "date_paiement": "2026-05-15 14:33:24.133606",
+      "statut": "PayÃ©"
+    },
+    {
+      "id": 3,
+      "membre_id": 4,
+      "type_cotisation": "Adhesion",
+      "montant": 5000.0,
+      "periode": "Avril 2026",
+      "date_paiement": "2026-05-21 08:54:43.173666",
+      "statut": "PayÃ©"
+    },
+    {
+      "id": 4,
+      "membre_id": 5,
+      "type_cotisation": "Adhesion",
+      "montant": 5000.0,
+      "periode": "21/05/2026",
+      "date_paiement": "2026-05-21 09:15:29.206413",
+      "statut": "PayÃ©"
+    }
+  ],
+  "aides": [
+    {
+      "id": 1,
+      "membre_id": 2,
+      "type_aide": "Autre",
+      "montant": 2000.0,
+      "date_attribution": "2026-05-14 14:58:43.704175",
+      "description": "Promotion de promotion de Mr DEGBE Detoh Patrice deparrt au ministere des de l'economie est de finances. mutation au Tresor de Korhogo.",
+      "valide_par_admin": 1
+    },
+    {
+      "id": 2,
+      "membre_id": 4,
+      "type_aide": "Mariage",
+      "montant": 2000.0,
+      "date_attribution": "2026-05-21 08:56:54.446692",
+      "description": "Assistance de Mle LETO Rosine pour son mariage",
+      "valide_par_admin": 1
+    },
+    {
+      "id": 3,
+      "membre_id": 5,
+      "type_aide": "Mariage",
+      "montant": 2000.0,
+      "date_attribution": "2026-05-21 09:17:25.810638",
+      "description": "Dote de Mr Kante Ã  Abidjan CÃ´te d'ivoire",
+      "valide_par_admin": 1
+    }
+  ],
+  "evenements": [
+    {
+      "id": 1,
+      "nom": "AssemblÃ©e Generale",
+      "budget_prevu": 250.0,
+      "depenses_reelles": 260.0,
+      "date": "2026-05-31 00:00:00.000000",
+      "description": "AssemblÃ©e Generale"
+    }
+  ],
+  "dons": [],
+  "projets": []
+}

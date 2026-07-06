@@ -1,0 +1,21 @@
+{% extends "emails/base.html" %}
+
+{% block content %}
+<h2>Rappel : Cotisation à Payer ⏰</h2>
+
+<p>Bonjour {{ membre.prenom }} {{ membre.nom }},</p>
+
+<p>Ceci est un rappel concernant votre cotisation.</p>
+
+<div class="info-box" style="border-left-color: #f39c12;">
+    <h3>Informations :</h3>
+    <p><strong>Montant :</strong> {{ "%.2f"|format(montant) }} €</p>
+    <p><strong>Date d'échéance :</strong> {{ echeance_date.strftime('%d/%m/%Y') }}</p>
+</div>
+
+<p>Merci de régulariser votre situation dans les meilleurs délais.</p>
+
+<a href="http://127.0.0.1:5000/mon_compte" class="button">Accéder à mon compte</a>
+
+<p>Cordialement,<br>La Mutuelle Solidaire</p>
+{% endblock %}

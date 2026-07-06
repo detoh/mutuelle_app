@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+{% block title %}Gestion des Assistances{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+
+    <!-- En-tête -->
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div>
+            <h2 class="mb-0">📋 Gestion des Assistances</h2>
+            <small class="text-muted">Validez ou refusez les demandes soumises par les membres</small>
+        </div>
+        <span class="badge bg-warning text-dark fs-6 px-3 py-2">
+            {{ demandes|length }} demande(s)
+        </span>
+    </div>
+
+    <!-- Messages flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for cat, msg in messages %}
+                <div class="alert alert-{{ cat }} alert-dismissible fade show">
+                    {{ msg }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Filtres -->
+    <form method="GET" action="{{ url_for('admin_assistances') }}"
+          class="d-flex gap-3 align-items-end flex-wrap bg-light rounded p-3 mb-4">
+        <div>
+            <label class="form-label fw-semibold mb-1">Statut</label>
+            <select name="statut" class="form-select form-select-sm">
+                <option value="">🟡 En attente (défaut)</option>
+                <option value="En attente"  {% if statut_filtre == 'En attente'  %}selected{% endif %}>🟡 En attente</option>
+                <option value="Validée"     {% if statut_filtre == 'Validée'     %}selected{% endif %}>🟢 Validée</option>
+                <option value="Versée"      {% if statut_filtre == 'Versée'      %}selected{% endif %}>💰 Versée</option>
+                <option value="Refusée"     {% if statut_filtre == 'Refusée'     %}selected{% endif %}>🔴 Refusée</option>
+            </select>
+        </div>
+        <div>
+            <label class="form-label fw-semibold mb-1">Type</label>
+            <select name="type" class="form-select form-select-sm">
+                <option value="">Tous les types</option>
+                <option value="Deces"     {% if type_filtre == 'Deces'     %}selected{% endif %}>⚰️ Décès</option>
+                <option value="Naissance" {% if type_filtre == 'Naissance' %}selected{% endif %}>👶 Naissance</option>
+                <option value="Mariage"   {% if type_filtre == 'Mariage'   %}selected{% endif %}>💍 Mariage</option>
+                <option value="Mariage"   {% if type_filtre == 'Maladie'   %}selected{% endif %}>💍 Maladie</option>
+                <option value="Mariage"   {% if type_filtre == 'Accident'   %}selected{% endif %}>💍 Accident</option>
+                <option value="Mariage"   {% if type_filtre == 'Retraite'   %}selected{% endif %}>💍 Retraite</option>
+                <option value="Mariage"   {% if type_filtre == 'Mutation'   %}selected{% endif %}>💍 Mutation</option>
+                <option value="Mariage"   {% if type_filtre == 'Autres'   %}selected{% endif %}>💍 Autres</option>
+            </select>
+        </div>
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary btn-sm">🔍 Filtrer</button>
+            <a href="{{ url_for('admin_assistances') }}" class="btn btn-outline-secondary btn-sm">↺ Réinitialiser</a>
+        </div>
+    </form>
+
+    <!-- Tableau -->
+    {% if demandes %}
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="ps-3">#</th>
+                        <th>Membre</th>
+                        <th>Type</th>
+                        <th>Concerné</th>
+                        <th>Date évén.</th>
+                        <th>Soumis le</th>
+                        <th>Montant</th>
+                        <th>Statut</th>
+                        <th>Pièce</th>
+                        <th class="text-center pe-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ass in demandes %}
+                    <tr>
+                        <!-- ID -->
+                        <td class="ps-3 text-muted fw-bold">#{{ ass.id }}</td>
+
+                        <!-- Membre -->
+                        <td>
+                            <div class="fw-semibold">{{ ass.membre.prenom }} {{ ass.membre.nom }}</div>
+                            <small class="text-muted">{{ ass.membre.email or '—' }}</small>
+                        </td>
+
+                        <!-- Type -->
+                        <td>
+                            {% if ass.type_evenement == 'Deces' %}
+                                <span class="badge bg-secondary">⚰️ Décès</span>
+                            {% elif ass.type_evenement == 'Naissance' %}
+                                <span class="badge bg-success">👶 Naissance</span>
+                            {% elif ass.type_evenement == 'Mariage' %}
+                                <span class="badge text-white" style="background:#d63384;">💍 Mariage</span>
+                            {% elif ass.type_evenement == 'Maladie' %}
+                                  <span class="badge text-white" style="background:#d63384;">💍 Maladie</span> 
+                            {% elif ass.type_evenement == 'Accident' %}    
+                                <span class="badge text-white" style="background:#d63384;">💍Accident</span>
+                            {% elif ass.type_evenement == 'Retraite' %}   
+                                <span class="badge text-white" style="background:#d63384;">💍Retraite</span> 
+                            {% elif ass.type_evenement == 'Mutation' %}   
+                                <span class="badge text-white" style="background:#d63384;">💍Mutation</span> 
+                            {% elif ass.type_evenement == 'Autres' %}
+                                <span class="badge text-white" style="background:#d63384;">💍Autres</span>     
+                            {% else %}
+                                <span class="badge bg-light text-dark">{{ ass.type_evenement }}</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Membre famille concerné -->
+                        <td>
+                            {% if ass.famille %}
+                                <div class="fw-semibold">{{ ass.famille.prenom }} {{ ass.famille.nom }}</div>
+                                <small class="text-muted">{{ ass.famille.lien_parente }}</small>
+                                {% if ass.type_evenement == 'Naissance' and ass.famille.parent1_membre_id and ass.famille.parent2_membre_id %}
+                                    <div class="mt-1">
+                                        <span class="badge bg-warning text-dark" style="font-size:.7rem;">
+                                            ⚠️ 2 parents membres
+                                        </span>
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                            {% if ass.description %}
+                                <div><small class="text-info">{{ ass.description }}</small></div>
+                            {% endif %}
+                        </td>
+
+                        <!-- Date événement -->
+                        <td>{{ ass.date_evenement.strftime('%d/%m/%Y') if ass.date_evenement else '—' }}</td>
+
+                        <!-- Date soumission -->
+                        <td>
+                            <div>{{ ass.demande_le.strftime('%d/%m/%Y') if ass.demande_le else '—' }}</div>
+                            <small class="text-muted">{{ ass.demande_le.strftime('%H:%M') if ass.demande_le else '' }}</small>
+                        </td>
+
+                        <!-- Montant -->
+                        <td class="fw-semibold text-success">
+                            {% if ass.montant_prevu and ass.montant_prevu > 0 %}
+                                {{ "{:,.0f}".format(ass.montant_prevu) }} FC
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Statut -->
+                        <td>
+                            {% if ass.statut == 'En attente' %}
+                                <span class="badge bg-warning text-dark">🟡 En attente</span>
+                            {% elif ass.statut == 'Validée' %}
+                                <span class="badge bg-success">🟢 Validée</span>
+                            {% elif ass.statut == 'Versée' %}
+                                <span class="badge bg-primary">💰 Versée</span>
+                            {% elif ass.statut == 'Refusée' %}
+                                <span class="badge bg-danger">🔴 Refusée</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ ass.statut }}</span>
+                            {% endif %}
+                            {% if ass.statut == 'Refusée' and ass.motif_refus %}
+                                <div><small class="text-muted fst-italic">{{ ass.motif_refus }}</small></div>
+                            {% endif %}
+                        </td>
+
+                        <!-- Pièce jointe -->
+                        <td class="text-center">
+                            {% if ass.piece_jointe_path %}
+                                <a href="{{ url_for('static', filename=ass.piece_jointe_path) }}"
+                                   target="_blank"
+                                   class="btn btn-outline-secondary btn-sm"
+                                   title="Voir la pièce justificative">📎</a>
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Actions -->
+                        <td class="text-center pe-3">
+                            {% if ass.statut == 'En attente' %}
+                            <div class="d-flex gap-2 justify-content-center">
+
+                                <!-- VALIDER -->
+                                <form method="POST"
+                                      action="{{ url_for('valider_assistance', assistance_id=ass.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit"
+                                            class="btn btn-success btn-sm fw-semibold"
+                                            onclick="return confirm('Confirmer la validation de la demande #{{ ass.id }} ?')">
+                                        ✅ Valider
+                                    </button>
+                                </form>
+
+                                <!-- REFUSER -->
+                                <button type="button"
+                                        class="btn btn-danger btn-sm fw-semibold"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalRefus"
+                                        data-id="{{ ass.id }}"
+                                        data-nom="{{ ass.membre.prenom }} {{ ass.membre.nom }}"
+                                        data-type="{{ ass.type_evenement }}">
+                                    ❌ Refuser
+                                </button>
+
+                            </div>
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% else %}
+    <div class="card border-0 shadow-sm">
+        <div class="card-body text-center py-5">
+            <div style="font-size:3rem;">📭</div>
+            <h5 class="mt-2 text-muted">Aucune demande trouvée</h5>
+            <p class="text-muted mb-0">
+                {% if statut_filtre or type_filtre %}
+                    Aucune demande ne correspond aux filtres sélectionnés.
+                {% else %}
+                    Toutes les demandes en attente ont été traitées.
+                {% endif %}
+            </p>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+
+<!-- ════════════════════════════════════════
+     MODAL — MOTIF DE REFUS
+     Formulaire POST classique vers Flask
+════════════════════════════════════════ -->
+<div class="modal fade" id="modalRefus" tabindex="-1"
+     aria-labelledby="titreModalRefus" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 overflow-hidden shadow-lg">
+
+            <div class="modal-header text-white border-0"
+                 style="background:linear-gradient(135deg,#c62828,#b71c1c);">
+                <div class="d-flex align-items-center gap-2">
+                    <span style="font-size:1.4rem;">❌</span>
+                    <div>
+                        <h5 class="modal-title mb-0 fw-bold" id="titreModalRefus">Refuser la demande</h5>
+                        <small class="opacity-75" id="sousTitreRefus">—</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white"
+                        data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+
+            <form method="POST" id="formRefus" action="" novalidate>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="modal-body bg-light p-4">
+                    <div class="alert alert-warning d-flex gap-2 py-2 mb-3">
+                        <span>⚠️</span>
+                        <span>Cette action est irréversible. Le membre sera informé du refus.</span>
+                    </div>
+                    <label class="form-label fw-semibold" for="champMotif">
+                        Motif du refus <span class="text-danger">*</span>
+                    </label>
+                    <textarea class="form-control"
+                              name="motif_refus"
+                              id="champMotif"
+                              rows="3"
+                              placeholder="Expliquez la raison du refus au membre…"
+                              maxlength="200"
+                              required></textarea>
+                    <div class="invalid-feedback">Le motif est obligatoire.</div>
+                    <small class="text-muted">200 caractères max.</small>
+                </div>
+
+                <div class="modal-footer bg-light border-top">
+                    <button type="button" class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-danger fw-semibold px-4">
+                        ❌ Confirmer le refus
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script>
+(function () {
+    'use strict';
+    var labels = { 'Deces': 'Décès', 'Naissance': 'Naissance', 'Mariage': 'Mariage' };
+
+    // Pré-remplir le modal refus avec les données du bouton cliqué
+    document.querySelectorAll('[data-bs-target="#modalRefus"]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var id   = this.dataset.id;
+            var nom  = this.dataset.nom;
+            var type = this.dataset.type;
+
+            document.getElementById('formRefus').action =
+                '/admin/assistances/' + id + '/refuser';
+            document.getElementById('sousTitreRefus').textContent =
+                'Demande #' + id + ' — ' + nom + ' (' + (labels[type] || type) + ')';
+            document.getElementById('champMotif').value = '';
+            document.getElementById('formRefus').classList.remove('was-validated');
+        });
+    });
+
+    // Validation HTML5 avant soumission
+    var form = document.getElementById('formRefus');
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            if (!form.checkValidity()) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        });
+    }
+})();
+</script>
+
+{% endblock %}

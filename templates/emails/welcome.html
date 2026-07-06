@@ -1,0 +1,33 @@
+{% extends "emails/base.html" %}
+
+{% block content %}
+<h2>Bienvenue {{ membre.prenom }} ! 🎉</h2>
+
+<p>Nous sommes ravis de vous accueillir à la <strong>Mutuelle Solidaire</strong>.</p>
+
+<div class="info-box">
+    <h3>Vos identifiants de connexion :</h3>
+    <p><strong>Email :</strong> {{ membre.email }}</p>
+    <p><strong>Mot de passe temporaire :</strong> <code>{{ mot_de_passe_temporaire }}</code></p>
+    <p><strong>URL :</strong> <a href="{{ url_login }}">{{ url_login }}</a></p>
+</div>
+
+<p style="color:#b45309;">
+    ⚠️ Pour des raisons de sécurité, vous devrez changer ce mot de passe
+    dès votre première connexion.
+</p>
+
+<p>Une fois connecté, vous pourrez :</p>
+<ul>
+    <li>Consulter votre historique de cotisations</li>
+    <li>Suivre vos aides reçues</li>
+    <li>Télécharger vos reçus</li>
+    <li>Modifier vos informations personnelles</li>
+</ul>
+
+<a href="{{ url_login }}" class="button">Se Connecter</a>
+
+<p>Pour toute question, n'hésitez pas à nous contacter.</p>
+
+<p>Cordialement,<br>L'équipe de la Mutuelle de Developpement - UPGC</p>
+{% endblock %}

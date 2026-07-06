@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+
+{% block title %}Transactions - Espace Comptable{% endblock %}
+
+{% block content %}
+<!-- En-tête -->
+<div class="page-header bg-primary text-white py-4">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="mb-2">
+                    <i class="fas fa-list"></i> Toutes les Transactions
+                </h1>
+                <p class="mb-0 opacity-75">Historique complet des opérations financières</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a href="{{ url_for('dashboard_comptable') }}" class="btn btn-light">
+                    <i class="fas fa-arrow-left"></i> Retour au Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-4">
+
+    <!-- Filtres -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <input type="text" class="form-control" id="searchTransaction"
+                           placeholder="Rechercher...">
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" id="filterType">
+                        <option value="">Tous les types</option>
+                        <option value="cotisation">Cotisations</option>
+                        <option value="aide">Aides</option>
+                        <option value="don">Dons</option>
+                        <option value="assistance">Assistances événement</option>
+                        <option value="evenement">Événements</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" id="filterSigne">
+                        <option value="">Tous</option>
+                        <option value="+">Entrees (+)</option>
+                        <option value="-">Sorties (-)</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary w-100" onclick="filterTransactions()">
+                        <i class="fas fa-filter"></i> Filtrer
+                    </button>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-outline-success w-100" onclick="alert('Export Excel en developpement')">
+                        <i class="fas fa-file-excel"></i> Export
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tableau des Transactions -->
+    <div class="card">
+        <div class="card-header bg-white py-3">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="fas fa-history text-primary"></i>
+                        <span id="transactionCount">{{ transactions|length }}</span> Transaction(s)
+                        <small class="text-muted fw-normal">(page courante)</small>
+                    </h5>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <span class="text-muted">
+                        Page {{ page }} sur {{ total_pages }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0" id="transactionsTable">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="py-3">Type</th>
+                            <th class="py-3">Description</th>
+                            <th class="py-3">Membre / Donateur</th>
+                            <th class="py-3">Date</th>
+                            <th class="py-3">Montant</th>
+                            <th class="py-3">Statut</th>
+                            <th class="py-3">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in transactions %}
+                        <tr data-type="{{ t.type_op }}" data-signe="{{ t.signe }}">
+
+                            <!-- 1. TYPE avec badge coloré -->
+                            <td class="py-3">
+                                {% if t.type_op == 'cotisation' %}
+                                    <span class="badge bg-primary me-1"><i class="fas fa-coins"></i></span>
+                                {% elif t.type_op == 'aide' %}
+                                    <span class="badge bg-danger me-1"><i class="fas fa-hand-holding-heart"></i></span>
+                                {% elif t.type_op == 'don' %}
+                                    <span class="badge bg-success me-1"><i class="fas fa-gift"></i></span>
+                                {% elif t.type_op == 'assistance' %}
+                                    <span class="badge bg-warning text-dark me-1"><i class="fas fa-calendar-alt"></i></span>
+                                {% elif t.type_op == 'evenement' %}
+                                    <span class="badge bg-secondary me-1"><i class="fas fa-calendar-check"></i></span>
+                                {% else %}
+                                    <span class="badge bg-secondary me-1"><i class="fas fa-exchange-alt"></i></span>
+                                {% endif %}
+                                {{ t.subtype or t.type_op | capitalize }}
+                            </td>
+
+                            <!-- 2. DESCRIPTION -->
+                            <td class="py-3">
+                                {% if t.type_op == 'cotisation' %}
+                                    Cotisation {{ t.subtype or '' }}
+                                {% elif t.type_op == 'aide' %}
+                                    Aide {{ t.subtype or '' }}
+                                {% elif t.type_op == 'don' %}
+                                    Don de {{ t.membre or '' }}
+                                {% elif t.type_op == 'assistance' %}
+                                    Assistance {{ t.subtype or 'événement' }}
+                                {% elif t.type_op == 'evenement' %}
+                                    Dépenses — {{ t.subtype or 'Événement' }}
+                                {% else %}
+                                    {{ t.type_op | capitalize }}
+                                {% endif %}
+                            </td>
+
+                            <!-- 3. MEMBRE / DONATEUR -->
+                            <td class="py-3">{{ t.membre or '-' }}</td>
+
+                            <!-- 4. DATE -->
+                            <td class="py-3">
+                                {% if t.date_op %}
+                                    {{ t.date_op.strftime('%d/%m/%Y') }}
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+
+                            <!-- 5. MONTANT -->
+                            <td class="py-3 fw-bold {{ 'text-success' if t.signe == '+' else 'text-danger' }}">
+                                {{ t.signe }}{{ "{:,.0f}".format(t.montant) }} FCFA
+                            </td>
+
+                            <!-- 6. STATUT -->
+                            <td class="py-3">
+                                {% if t.statut and t.statut|lower in ['paye', 'recu', 'accordee', 'versee', 'validee', 'validée', 'versée'] %}
+                                    <span class="badge bg-success">{{ t.statut }}</span>
+                                {% elif t.statut and t.statut|lower in ['en attente', 'en_attente'] %}
+                                    <span class="badge bg-warning text-dark">{{ t.statut }}</span>
+                                {% elif t.statut and t.statut|lower in ['refusee', 'refusée'] %}
+                                    <span class="badge bg-danger">{{ t.statut }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ t.statut or '-' }}</span>
+                                {% endif %}
+                            </td>
+
+                            <!-- 7. ACTION -->
+                            <td class="py-3">
+                                {% if t.type_op == 'cotisation' and t.statut and t.statut|lower in ['en attente', 'en_attente'] %}
+                                    <form action="{{ url_for('valider_cotisation', id=t.id) }}"
+                                          method="POST" style="display:inline;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <button type="submit" class="btn btn-sm btn-success">
+                                            <i class="fas fa-check"></i> Valider
+                                        </button>
+                                    </form>
+                                {% elif t.type_op == 'cotisation' %}
+                                    <a href="{{ url_for('telecharger_recu', id=t.id) }}"
+                                       class="btn btn-sm btn-outline-primary" target="_blank">
+                                        <i class="fas fa-download"></i> PDF
+                                    </a>
+                                {% elif t.type_op == 'assistance' %}
+                                    {% if t.statut and t.statut|lower == 'en attente' %}
+                                        <a href="{{ url_for('admin_assistances') }}"
+                                           class="btn btn-sm btn-warning">
+                                            <i class="fas fa-eye"></i> Traiter
+                                        </a>
+                                    {% elif t.statut and t.statut|lower in ['validée', 'versée'] %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check-circle"></i> {{ t.statut }}
+                                        </span>
+                                    {% elif t.statut and t.statut|lower == 'refusée' %}
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-times-circle"></i> Refusée
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted">—</span>
+                                    {% endif %}
+                                {% elif t.type_op == 'evenement' %}
+                                    <a href="{{ url_for('liste_evenements') }}"
+                                       class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-calendar"></i> Voir
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                <p class="mb-0">Aucune transaction trouvee</p>
+                                <small>Commencez par enregistrer des cotisations, aides ou dons</small>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        <tr id="noFilterResultRow" style="display:none;">
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <i class="fas fa-search fa-2x mb-3 d-block"></i>
+                                <p class="mb-0">Aucun résultat sur cette page pour ces critères.</p>
+                                <small>La recherche ne porte que sur les {{ transactions|length }} lignes affichées (page {{ page }} sur {{ total_pages }}). Changez de page pour chercher ailleurs.</small>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        {% if total_pages > 1 %}
+        <div class="card-footer bg-white">
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    <li class="page-item {{ 'disabled' if page == 1 }}">
+                        <a class="page-link" href="{{ url_for('transactions_comptable', page=page-1) }}">
+                            <i class="fas fa-chevron-left"></i> Precedent
+                        </a>
+                    </li>
+                    {% for p in range(1, total_pages + 1) %}
+                        {% if p == 1 or p == total_pages or (p >= page-2 and p <= page+2) %}
+                        <li class="page-item {{ 'active' if p == page }}">
+                            <a class="page-link" href="{{ url_for('transactions_comptable', page=p) }}">{{ p }}</a>
+                        </li>
+                        {% elif p == page-3 or p == page+3 %}
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                    {% endfor %}
+                    <li class="page-item {{ 'disabled' if page == total_pages }}">
+                        <a class="page-link" href="{{ url_for('transactions_comptable', page=page+1) }}">
+                            Suivant <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Resume financier -->
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-arrow-down fa-2x mb-2"></i>
+                    <h5>Total Entrees</h5>
+                    <h3>{{ "{:,.0f}".format(transactions | selectattr('signe', 'equalto', '+') | sum(attribute='montant')) }} FCFA</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-danger text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-arrow-up fa-2x mb-2"></i>
+                    <h5>Total Sorties</h5>
+                    <h3>{{ "{:,.0f}".format(transactions | selectattr('signe', 'equalto', '-') | sum(attribute='montant')) }} FCFA</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-wallet fa-2x mb-2"></i>
+                    <h5>Solde Net</h5>
+                    <h3>{{ "{:,.0f}".format(
+                        (transactions | selectattr('signe', 'equalto', '+') | sum(attribute='montant')) -
+                        (transactions | selectattr('signe', 'equalto', '-') | sum(attribute='montant'))
+                    ) }} FCFA</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchTransaction');
+    const typeSelect   = document.getElementById('filterType');
+    const signeSelect  = document.getElementById('filterSigne');
+
+    if (searchInput) searchInput.addEventListener('keyup', filterTransactions);
+    if (typeSelect)  typeSelect.addEventListener('change', filterTransactions);
+    if (signeSelect) signeSelect.addEventListener('change', filterTransactions);
+});
+
+function filterTransactions() {
+    const searchValue = document.getElementById('searchTransaction').value.toLowerCase();
+    const typeFilter  = document.getElementById('filterType').value;
+    const signeFilter = document.getElementById('filterSigne').value;
+    const noResultRow = document.getElementById('noFilterResultRow');
+
+    // On ne touche qu'aux vraies lignes de données (pas la ligne "aucun résultat")
+    const rows = document.querySelectorAll('#transactionsTable tbody tr:not(#noFilterResultRow)');
+
+    let visibleCount = 0;
+
+    rows.forEach(row => {
+        const rowType  = row.dataset.type  || '';
+        const rowSigne = row.dataset.signe || '';
+        const rowText  = row.textContent.toLowerCase();
+
+        const searchMatch = rowText.includes(searchValue);
+        const typeMatch   = !typeFilter  || rowType  === typeFilter;
+        const signeMatch  = !signeFilter || rowSigne === signeFilter;
+
+        const isVisible = searchMatch && typeMatch && signeMatch;
+        row.style.display = isVisible ? '' : 'none';
+        if (isVisible) visibleCount++;
+    });
+
+    // Met à jour le compteur affiché dans l'en-tête
+    const countEl = document.getElementById('transactionCount');
+    if (countEl) countEl.textContent = visibleCount;
+
+    // Affiche le message "aucun résultat" uniquement si on a filtré et qu'il ne reste rien,
+    // mais qu'il y avait bien des transactions sur cette page au départ.
+    if (noResultRow) {
+        noResultRow.style.display = (rows.length > 0 && visibleCount === 0) ? '' : 'none';
+    }
+}
+</script>
+{% endblock %}

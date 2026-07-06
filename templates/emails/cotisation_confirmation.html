@@ -1,0 +1,22 @@
+{% extends "emails/base.html" %}
+
+{% block content %}
+<h2>Cotisation enregistrée ✅</h2>
+
+<p>Bonjour {{ membre.prenom }},</p>
+
+<p>Nous confirmons la bonne réception de votre cotisation auprès de la <strong>Mutuelle Solidaire</strong>.</p>
+
+<div class="info-box">
+    <h3>Détails de la cotisation :</h3>
+    <p><strong>Type :</strong> {{ cotisation.type_cotisation or 'Non spécifié' }}</p>
+    <p><strong>Montant :</strong> {{ cotisation.montant }} FCFA</p>
+    <p><strong>Date de paiement :</strong> {{ date_fmt }}</p>
+    <p><strong>Mode de paiement :</strong> {{ cotisation.mode_paiement or 'Non spécifié' }}</p>
+    <p><strong>Référence :</strong> {{ cotisation.reference_transaction or 'N/A' }}</p>
+</div>
+
+<p>Merci pour votre confiance et votre engagement envers la mutuelle.</p>
+
+<p>Cordialement,<br>L'équipe de la Mutuelle de Developpement - UPGC</p>
+{% endblock %}

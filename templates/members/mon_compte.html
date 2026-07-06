@@ -1,0 +1,853 @@
+{% extends "base.html" %}
+{% block title %}Mon Compte{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <h2 class="mb-4">Tableau de bord de {{ user.nom }} {{ user.prenom }}</h2>
+
+    <!-- Messages flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for cat, msg in messages %}
+                <div class="alert alert-{{ cat }} alert-dismissible fade show" role="alert">
+                    {{ msg }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="row">
+        <!-- ══════════════════════════════════════════════
+             BARRE LATÉRALE — Photo de profil et infos
+        ══════════════════════════════════════════════ -->
+        <div class="col-lg-3 mb-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    {% if user.photo %}
+                        <img src="{{ url_for('static', filename=user.photo) }}"
+                             class="rounded-circle mb-3 border"
+                             style="width:150px;height:150px;object-fit:cover;"
+                             alt="Photo de profil">
+                    {% else %}
+                        <div class="rounded-circle mb-3 mx-auto d-flex align-items-center justify-content-center bg-light border"
+                             style="width:150px;height:150px;">
+                            <i class="fas fa-user fa-3x text-muted"></i>
+                        </div>
+                    {% endif %}
+
+                    <h5 class="mb-0">{{ user.prenom }} {{ user.nom }}</h5>
+                    <p class="text-muted small mb-3">{{ user.fonction or 'Membre' }}</p>
+
+                    <form method="POST" action="{{ url_for('upload_photo', id=user.id) }}"
+                          enctype="multipart/form-data" class="mb-3">
+                        <input type="file" name="photo" accept="image/*"
+                               class="form-control form-control-sm mb-2" required>
+                        <button type="submit" class="btn btn-sm btn-outline-primary w-100">
+                            <i class="fas fa-camera"></i> Changer la photo
+                        </button>
+                    </form>
+
+                    <hr>
+
+                    <ul class="list-unstyled text-start small mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-envelope text-muted me-2"></i>{{ user.email }}
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-phone text-muted me-2"></i>{{ user.telephone or '—' }}
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-calendar text-muted me-2"></i>Adhésion : {{ user.date_adhesion }}
+                        </li>
+                        <li>
+                            <span class="badge bg-{{ 'success' if user.statut == 'Actif' else 'secondary' }}">
+                                {{ user.statut }}
+                            </span>
+                        </li>
+                    </ul>
+
+                    <hr>
+
+                    <!-- Boutons d'action -->
+                    <div class="d-grid gap-2">
+                        <button type="button"
+                                class="btn btn-success btn-sm fw-semibold"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalDeclarerEvenement">
+                            🎗️ Déclarer un événement
+                        </button>
+                        <button id="btn-ouvrir-paiement" class="btn btn-primary btn-sm fw-semibold">
+                            <i class="fas fa-money-bill-wave"></i> Effectuer un paiement
+                        </button>
+                        <button type="button" class="btn btn-outline-primary btn-sm fw-semibold"
+                                data-bs-toggle="modal" data-bs-target="#modalAjoutFamille">
+                            <i class="fas fa-user-plus"></i> Ajouter Membre Famille
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════════
+             CONTENU PRINCIPAL
+        ══════════════════════════════════════════════ -->
+        <div class="col-lg-9">
+
+    <!-- 🟢/🔴 STATUT DU COMPTE -->
+    <div class="card mb-4 {% if est_a_jour %}border-success{% else %}border-danger{% endif %}">
+        <div class="card-header {% if est_a_jour %}bg-success text-white{% else %}bg-danger text-white{% endif %}">
+            <h5 class="mb-0">📊 État de votre compte</h5>
+        </div>
+        <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <p class="lead mb-0">
+                {% if est_a_jour %}
+                    ✅ Votre compte est <strong>à jour</strong>. Aucune cotisation en retard.
+                {% else %}
+                    ⚠️ Vous avez des <strong>cotisations en retard</strong>. Veuillez régulariser votre situation.
+                {% endif %}
+            </p>
+            {% if not est_a_jour %}
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="#" class="btn btn-warning">💳 Régulariser</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 👨‍👩‍👧‍👦 MEMBRES DE LA FAMILLE -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">👨‍👩‍👧‍👦 Membres de votre famille</h5>
+        </div>
+        <div class="card-body">
+            {% if family_members %}
+                <ul class="list-group list-group-flush">
+                    {% for member in family_members %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div>
+                            <strong>{{ member.prenom }} {{ member.nom }}</strong>
+                            <span class="badge bg-secondary ms-2">{{ member.lien_parente }}</span>
+                            {% if member.est_a_charge %}
+                                <span class="badge bg-info ms-1">À charge</span>
+                            {% endif %}
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            {% if member.date_naissance %}
+                                <small class="text-muted">{{ member.age }} ans</small>
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted mb-0">Aucun membre de famille enregistré. Cliquez sur "+ Ajouter" pour commencer.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 💰 HISTORIQUE DES COTISATIONS -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">💰 Historique des cotisations</h5>
+        </div>
+        <div class="card-body">
+            {% if cotisations %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Date Cotisation</th>
+                                <th>Type Cotisation</th>
+                                <th>Montant Cotisation (FCFA)</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cot in cotisations %}
+                            <tr>
+                                <td>{{ cot.date_paiement.strftime('%d/%m/%Y') if cot.date_paiement else '—' }}</td>
+                                <td>{{ cot.type_cotisation | capitalize if cot.type_cotisation else '—' }}</td>
+                                <td>{{ "{:,.0f}".format(cot.montant) }} FCFA</td>
+                                <td>
+                                    {% if cot.statut|lower in ['paye', 'paye'] %}
+                                        <span class="badge bg-success">Payé</span>
+                                    {% else %}
+                                        <span class="badge bg-warning text-dark">{{ cot.statut or 'En attente' }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted mb-0">Aucune cotisation enregistrée.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 🤝 HISTORIQUE DES ASSISTANCES -->
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">🤝 Historique des assistances</h5>
+        </div>
+        <div class="card-body">
+            {% if assistances %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Date Assistances </th>
+                                <th>Type Assistances</th>
+                                <th>Montant Assistances</th>
+                                <th>Description Assistances</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for assist in assistances %}
+                            <tr>
+                                <td>{{ assist.date_evenement.strftime('%d/%m/%Y') if assist.date_evenement else '—' }}</td>
+                                <td>{{ assist.type_evenement or '—' }}</td>
+                                <td>{{ "{:,.0f}".format(assist.montant_final or 0) }} FCFA</td>
+                                <td>{{ assist.description or '—' }}</td>
+                                <td>
+                                    <span class="badge bg-{{ assist.badge_couleur }}">{{ assist.statut }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted mb-0">Aucune assistance enregistrée pour le moment.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 💵 HISTORIQUE DES AIDES REÇUES -->
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">💵 Historique des aides reçues</h5>
+        </div>
+        <div class="card-body">
+            {% if aides %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Date Aide</th>
+                                <th>Type Aide</th>
+                                <th>Montant Aide</th>
+                                <th>Description Aide</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for aide in aides %}
+                            <tr>
+                                <td>{{ aide.date_attribution.strftime('%d/%m/%Y') if aide.date_attribution else '—' }}</td>
+                                <td>{{ aide.type_aide or '—' }}</td>
+                                <td>{{ "{:,.0f}".format(aide.montant) }} FCFA</td>
+                                <td>{{ aide.description or '—' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted mb-0">Aucune aide reçue pour le moment.</p>
+            {% endif %}
+        </div>
+    </div>
+
+        </div>
+        <!-- fin .col-lg-9 -->
+    </div>
+    <!-- fin .row -->
+</div>
+<!-- fin .container -->
+
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL — AJOUT MEMBRE FAMILLE (inchangé)
+══════════════════════════════════════════════════════ -->
+<div class="modal fade" id="modalAjoutFamille" tabindex="-1"
+     aria-labelledby="modalAjoutFamilleLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="POST" action="{{ url_for('ajouter_membre_famille') }}" class="modal-content">
+            {{ form_membre.hidden_tag() }}
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalAjoutFamilleLabel">Ajouter un membre de famille</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-2">
+                    {{ form_membre.nom.label(class="form-label") }}
+                    {{ form_membre.nom(class="form-control") }}
+                    {% if form_membre.nom.errors %}<small class="text-danger">{{ form_membre.nom.errors[0] }}</small>{% endif %}
+                </div>
+                <div class="mb-2">
+                    {{ form_membre.prenom.label(class="form-label") }}
+                    {{ form_membre.prenom(class="form-control") }}
+                    {% if form_membre.prenom.errors %}<small class="text-danger">{{ form_membre.prenom.errors[0] }}</small>{% endif %}
+                </div>
+                <div class="mb-2">
+                    {{ form_membre.lien_parente.label(class="form-label") }}
+                    {{ form_membre.lien_parente(class="form-select") }}
+                </div>
+                <div class="mb-2">
+                    {{ form_membre.date_naissance.label(class="form-label") }}
+                    {{ form_membre.date_naissance(class="form-control") }}
+                </div>
+                <div class="mb-2">
+                    {{ form_membre.telephone.label(class="form-label") }}
+                    {{ form_membre.telephone(class="form-control") }}
+                </div>
+                <div class="form-check mb-2">
+                    {{ form_membre.est_a_charge(class="form-check-input") }}
+                    {{ form_membre.est_a_charge.label(class="form-check-label") }}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                {{ form_membre.submit(class="btn btn-primary") }}
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="modalDeclarerEvenement" tabindex="-1"
+     aria-labelledby="titreModalEv" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 rounded-4 overflow-hidden shadow-lg">
+
+            <!-- En-tête -->
+            <div class="modal-header text-white border-0"
+                 style="background: linear-gradient(135deg,#1565c0,#0d47a1);">
+                <div class="d-flex align-items-center gap-2">
+                    <span style="font-size:1.5rem;">🎗️</span>
+                    <div>
+                        <h5 class="modal-title mb-0 fw-bold" id="titreModalEv">
+                            Déclarer un événement
+                        </h5>
+                        <small class="opacity-75">
+                            {{ user.prenom }} {{ user.nom }}
+                        </small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white"
+                        data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+
+            <!-- Formulaire -->
+            <form method="POST"
+                  id="formEvenement"
+                  action="{{ url_for('declarer_evenement_membre') }}"
+                  enctype="multipart/form-data"
+                  novalidate>
+              
+                {{ form_evenement.hidden_tag() }}
+                <div class="modal-body bg-light p-4">
+                    <div class="row g-3">
+
+                        <!-- ── ÉTAPE 1 : Type d'événement ── -->
+                        <div class="col-12">
+                            <label class="form-label fw-semibold text-dark mb-2">
+                                Quel événement souhaitez-vous déclarer ?
+                                <span class="text-danger">*</span>
+                            </label>
+                            <div class="d-flex gap-3 flex-wrap">
+                                {% set icones = {
+                                    'Deces': '⚰️', 'Naissance': '👶', 'Mariage': '💍',
+                                    'Maladie': '🏥', 'Accident': '🚑', 'Retraite': '🎉',
+                                    'Mutation': '📦', 'Autre': '📌'
+                                } %}
+                                {% for subfield in form_evenement.type_evenement %}
+                                <label class="carte-ev" id="carte-{{ subfield._value() }}">
+                                    {{ subfield }}
+                                    <span class="ev-icone">{{ icones.get(subfield._value(), '📌') }}</span>
+                                    <span class="ev-titre">{{ subfield.label.text }}</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                            {% if form_evenement.type_evenement.errors %}
+                                <small class="text-danger">{{ form_evenement.type_evenement.errors[0] }}</small>
+                            {% endif %}
+                        </div>
+
+                        <!-- ── ÉTAPE 2 : Membre de famille concerné
+                             Visible uniquement pour Décès et Naissance ── -->
+                        <div class="col-12" id="bloc-famille">
+                            {{ form_evenement.famille_id.label(class="form-label fw-semibold text-dark") }}
+                            {{ form_evenement.famille_id(class="form-select", id="champFamille") }}
+                            <small class="text-muted">
+                                Laissez vide si la personne n'est pas encore enregistrée.
+                            </small>
+                        </div>
+
+                        <!-- Message informatif Mariage (caché par défaut) -->
+                        <div class="col-12 d-none" id="info-mariage">
+                            <div class="alert alert-info d-flex align-items-center gap-2 py-2 mb-0">
+                                <span>💍</span>
+                                <span>
+                                    Pour un mariage, la déclaration vous concerne directement.
+                                    Aucun membre de famille à sélectionner.
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- ── Date de l'événement ── -->
+                        <div class="col-md-6">
+                            {{ form_evenement.date_evenement.label(class="form-label fw-semibold text-dark") }}
+                            <span class="text-danger">*</span>
+                            {{ form_evenement.date_evenement(class="form-control", id="champDate") }}
+                            {% if form_evenement.date_evenement.errors %}
+                                <small class="text-danger">{{ form_evenement.date_evenement.errors[0] }}</small>
+                            {% else %}
+                                <div class="invalid-feedback">La date est obligatoire.</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- ── Description ── -->
+                        <div class="col-md-6">
+                            {{ form_evenement.description.label(class="form-label fw-semibold text-dark") }}
+                            {{ form_evenement.description(class="form-control", id="champDesc", placeholder="Ex : Mon Mariage", maxlength=500) }}
+                            {% if form_evenement.description.errors %}
+                                <small class="text-danger">{{ form_evenement.description.errors[0] }}</small>
+                            {% endif %}
+                        </div>
+
+                        <!-- ── Montant souhaité ── -->
+                        <div class="col-md-6">
+                            {{ form_evenement.montant_demande.label(class="form-label fw-semibold text-dark") }}
+                            <div class="input-group">
+                                <span class="input-group-text bg-white">FCFA</span>
+                                {{ form_evenement.montant_demande(class="form-control", id="champMontant", min=0, step=500, placeholder="0") }}
+                            </div>
+                            <small class="text-muted">
+                                L'administration fixera le montant final.
+                            </small>
+                            {% if form_evenement.montant_demande.errors %}
+                                <small class="text-danger d-block">{{ form_evenement.montant_demande.errors[0] }}</small>
+                            {% endif %}
+                        </div>
+
+                        <!-- ── Pièce justificative ── -->
+                        <div class="col-md-6">
+                            {{ form_evenement.piece_justificative.label(class="form-label fw-semibold text-dark") }}
+                            {{ form_evenement.piece_justificative(class="form-control", id="champPiece", accept=".pdf,.jpg,.jpeg,.png") }}
+                            <small class="text-muted">PDF ou image — 5 Mo max.</small>
+                            {% if form_evenement.piece_justificative.errors %}
+                                <small class="text-danger d-block">{{ form_evenement.piece_justificative.errors[0] }}</small>
+                            {% endif %}
+                        </div>
+
+                        <!-- ── Notes ── -->
+                        <div class="col-12">
+                            {{ form_evenement.notes.label(class="form-label fw-semibold text-dark") }}
+                            {{ form_evenement.notes(class="form-control", id="champNotes", rows=2, placeholder="Informations utiles pour l'administration…") }}
+                        </div>
+
+                    </div><!-- /row -->
+                </div><!-- /modal-body -->
+
+                <div class="modal-footer bg-light border-top">
+                    <button type="button" class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal">Annuler</button>
+                    {{ form_evenement.submit(class="btn btn-success fw-semibold px-4") }}
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+<!-- ========================================== -->
+<!-- MODAL DE PAIEMENT (CORRIGÉ ET COMPLET)     -->
+<!-- ========================================== -->
+<div id="modal-paiement" style="display: none; position: fixed; z-index: 1060; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center;">
+    <div style="background-color: white; padding: 30px; border-radius: 10px; width: 90%; max-width: 500px; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+        
+        <span id="btn-fermer-modal" style="position: absolute; top: 15px; right: 20px; font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer;">&times;</span>
+        
+        <h3 style="margin-top: 0; color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px;">Effectuer un paiement</h3>
+        
+        <form id="form-paiement">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <!-- Type de cotisation -->
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Type de cotisation *</label>
+                <select name="type_paiement" id="type_paiement" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                    <option value="">-- Choisir --</option>
+                    <option value="mensuel">Cotisation Mensuelle</option>
+                    <option value="annuel">Cotisation Annuelle</option>
+                    <option value="autres">Autres (frais, dons, etc.)</option>
+                </select>
+            </div>
+
+            <!-- Moyen de paiement -->
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Moyen de paiement *</label>
+                <select name="mode_paiement" id="mode_paiement" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                    <option value="">-- Choisir --</option>
+                    <option value="wave">Wave</option>
+                    <option value="orange">Orange Money</option>
+                    <option value="mtn">MTN Money</option>
+                    <option value="moov">Moov Money</option>
+                    <option value="especes">Espèces (Saisie manuelle)</option>
+                </select>
+            </div>
+
+            <!-- Champ Téléphone (Caché par défaut, s'affiche si Mobile Money) -->
+            <div id="bloc-telephone" style="display: none; margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Numéro de téléphone *</label>
+                <input type="tel" name="telephone" id="telephone" placeholder="Ex: 07 12 34 56 78" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+            </div>
+
+            <!-- Montant -->
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Montant (FCFA) *</label>
+                <input type="number" name="montant" id="montant" min="100" required placeholder="5000" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+            </div>
+
+            <!-- Motif -->
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Motif / Note (optionnel)</label>
+                <input type="text" name="motif" id="motif" placeholder="Ex: Régularisation" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+            </div>
+
+            <!-- Bouton Soumettre -->
+            <button type="submit" id="btn-soumettre" style="width: 100%; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                Confirmer le paiement
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     STYLES
+══════════════════════════════════════════════════════ -->
+<style>
+.carte-ev {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .25rem;
+    width: 130px;
+    padding: .8rem .5rem;
+    border: 2px solid #dee2e6;
+    border-radius: 12px;
+    cursor: pointer;
+    background: #fff;
+    transition: border-color .2s, background .2s, transform .1s;
+    user-select: none;
+    text-align: center;
+}
+.carte-ev input[type="radio"] { display: none; }
+.carte-ev:hover  { border-color: #0d6efd; background: #f0f4ff; transform: translateY(-2px); }
+.carte-ev.sel-deces     { border-color: #6c757d; background: #e9ecef; }
+.carte-ev.sel-naissance { border-color: #198754; background: #d1e7dd; }
+.carte-ev.sel-mariage   { border-color: #d63384; background: #f8d7e8; }
+.ev-icone { font-size: 1.8rem; }
+.ev-titre { font-size: .85rem; font-weight: 700; color: #212529; }
+.ev-desc  { font-size: .72rem; color: #6c757d; }
+
+/* Bouton de paiement */
+.btn-paiement {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    margin: 0;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-paiement:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+/* Note: les styles .modal et .modal-content sont gérés par Bootstrap.
+   Ne pas les redéfinir ici pour éviter les conflits de z-index et d'affichage. */
+
+/* Opérateurs */
+.operateurs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.operateur {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.operateur:hover {
+    border-color: #667eea;
+    transform: scale(1.05);
+}
+
+.operateur.selected {
+    border-color: #667eea;
+    background-color: #f0f4ff;
+}
+
+.logo-operateur {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+    color: white;
+    margin-bottom: 10px;
+}
+
+.logo-operateur.wave { background: #1dc8f8; }
+.logo-operateur.orange { background: #ff6600; }
+.logo-operateur.mtn { background: #ffcc00; color: #000; }
+.logo-operateur.moov { background: #0066cc; }
+
+/* Formulaire */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.btn-confirmer {
+    width: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 15px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-confirmer:hover {
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .operateurs {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+
+<!-- ══════════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════════ -->
+<script>
+(function () {
+    'use strict';
+
+    var CLASSES = {
+        'Deces':     'sel-deces',
+        'Naissance': 'sel-naissance',
+        'Mariage':   'sel-mariage'
+    };
+
+    // ── Mettre à jour l'affichage selon le type sélectionné ──────────────
+    function majAffichage() {
+        var selVal = '';
+        document.querySelectorAll('.carte-ev input[type="radio"]').forEach(function (r) {
+            var carte = r.closest('.carte-ev');
+            Object.values(CLASSES).forEach(function (c) { carte.classList.remove(c); });
+            if (r.checked) {
+                selVal = r.value;
+                carte.classList.add(CLASSES[r.value] || '');
+            }
+        });
+
+        // Afficher/masquer le sélecteur de membre famille et le message mariage
+        var blocFamille  = document.getElementById('bloc-famille');
+        var infoMariage  = document.getElementById('info-mariage');
+        var champFamille = document.getElementById('champFamille');
+
+        if (selVal === 'Mariage') {
+            blocFamille.classList.add('d-none');
+            infoMariage.classList.remove('d-none');
+            champFamille.value = '';          // vider la sélection
+        } else {
+            blocFamille.classList.remove('d-none');
+            infoMariage.classList.add('d-none');
+        }
+    }
+
+    document.querySelectorAll('.carte-ev input[type="radio"]').forEach(function (r) {
+        r.addEventListener('change', majAffichage);
+    });
+    majAffichage(); // état initial
+
+    // ── Validation HTML5 avant soumission ────────────────────────────────
+    var form = document.getElementById('formEvenement');
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            if (!form.checkValidity()) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        });
+    }
+
+    // ── Réinitialiser à la fermeture du modal ────────────────────────────
+    var modal = document.getElementById('modalDeclarerEvenement');
+    if (modal) {
+        modal.addEventListener('hidden.bs.modal', function () {
+            if (form) {
+                form.reset();
+                form.classList.remove('was-validated');
+            }
+            majAffichage();
+        });
+    }
+})();
+
+//  JAVASCRIPT (Gestion du modal et envoi)   
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Récupération des éléments
+    const btnsOuvrir = document.querySelectorAll('#btn-ouvrir-paiement'); // Gère les 2 boutons
+    const modal = document.getElementById('modal-paiement');
+    const btnFermer = document.getElementById('btn-fermer-modal');
+    const formPaiement = document.getElementById('form-paiement');
+    const selectMode = document.getElementById('mode_paiement');
+    const blocTelephone = document.getElementById('bloc-telephone');
+    const inputTelephone = document.getElementById('telephone');
+    const btnSoumettre = document.getElementById('btn-soumettre');
+
+    // 2. Ouvrir le modal
+    btnsOuvrir.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (modal) modal.style.display = 'flex';
+        });
+    });
+
+    // 3. Fermer le modal
+    function fermerModal() {
+        if (modal) modal.style.display = 'none';
+        if (formPaiement) formPaiement.reset();
+        if (blocTelephone) blocTelephone.style.display = 'none';
+        if (inputTelephone) inputTelephone.required = false;
+    }
+
+    if (btnFermer) btnFermer.addEventListener('click', fermerModal);
+    
+    window.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            fermerModal();
+        }
+    });
+
+    // 4. Afficher/Masquer le champ téléphone selon le mode de paiement
+    if (selectMode) {
+        selectMode.addEventListener('change', function() {
+            const modesMobile = ['wave', 'orange', 'mtn', 'moov'];
+            if (modesMobile.includes(this.value)) {
+                blocTelephone.style.display = 'block';
+                inputTelephone.required = true;
+            } else {
+                blocTelephone.style.display = 'none';
+                inputTelephone.required = false;
+                inputTelephone.value = '';
+            }
+        });
+    }
+
+    // 5. Soumission du formulaire vers le backend
+    if (formPaiement) {
+        formPaiement.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(formPaiement);
+            const data = Object.fromEntries(formData.entries());
+
+            // Récupérer le CSRF token depuis la meta ou un input hidden
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content
+                           || document.querySelector('input[name="csrf_token"]')?.value
+                           || '';
+
+            btnSoumettre.disabled = true;
+            btnSoumettre.innerText = 'Traitement en cours...';
+
+            fetch('/api/enregistrer-paiement', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error('Erreur serveur ' + response.status + ' : ' + text.substring(0, 200));
+                    });
+                }
+                return response.json();
+            })
+            .then(result => {
+                if (result.success) {
+                    alert('Paiement enregistré avec succès !\nRéférence : ' + result.reference);
+                    fermerModal();
+                    window.location.reload();
+                } else {
+                    alert('Erreur : ' + (result.message || 'Problème inconnu'));
+                }
+            })
+            .catch(error => {
+                console.error('Erreur paiement:', error);
+                alert('Erreur : ' + error.message);
+            })
+            .finally(() => {
+                btnSoumettre.disabled = false;
+                btnSoumettre.innerText = 'Confirmer le paiement';
+            });
+        });
+    }
+});
+
+</script>
+
+{% endblock %}

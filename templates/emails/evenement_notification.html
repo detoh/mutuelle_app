@@ -1,0 +1,22 @@
+{% extends "emails/base.html" %}
+
+{% block content %}
+<h2>Événement à Venir 📅</h2>
+
+<p>Bonjour,</p>
+
+<p>Vous êtes invité(e) à notre prochain événement.</p>
+
+<div class="info-box" style="border-left-color: #9b59b6;">
+    <h3>Détails de l'événement :</h3>
+    <p><strong>Nom :</strong> {{ evenement.nom }}</p>
+    <p><strong>Date :</strong> {{ evenement.date.strftime('%d/%m/%Y') }}</p>
+    <p><strong>Description :</strong> {{ evenement.description }}</p>
+</div>
+
+<p>Nous espérons vous y voir nombreux !</p>
+
+<a href="http://127.0.0.1:5000/evenements" class="button">Voir tous les événements</a>
+
+<p>Cordialement,<br>La Mutuelle Solidaire</p>
+{% endblock %}

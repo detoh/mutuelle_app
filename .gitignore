@@ -1,0 +1,165 @@
+# ========================================
+# ENVIRONNEMENT VIRTUEL
+# ========================================
+venv/
+env/
+ENV/
+.venv/
+
+# ========================================
+# VARIABLES D'ENVIRONNEMENT (SECRETS)
+# ========================================
+.env
+.env.local
+.env.production
+.env.*
+!.env.example
+
+# ========================================
+# POSTGRESQL - BASE DE DONNÉES
+# ========================================
+# Fichiers de sauvegarde/backup
+*.sql
+*.dump
+*.backup
+*.pgdump
+*.pg_dump
+backups/
+backup/
+db_backups/
+
+# Fichiers de données PostgreSQL (si installation locale)
+pgdata/
+postgres_data/
+/data/
+
+# Fichiers de configuration PostgreSQL locaux
+postgresql.conf.local
+pg_hba.conf.local
+
+# Logs PostgreSQL
+postgres.log
+postgresql.log
+pg_log/
+log/postgresql*.log
+
+# Fichiers temporaires PostgreSQL
+*.pid
+*.socket
+pg_stat_tmp/
+
+# ========================================
+# PYTHON
+# ========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ========================================
+# FLASK
+# ========================================
+instance/
+.webassets-cache
+flask_session/
+sessions/
+
+# ========================================
+# FLASK-MIGRATE / ALEMBIC
+# ========================================
+# Garder les migrations mais exclure certains fichiers
+# migrations/versions/*.pyc
+
+# ========================================
+# FICHIERS UPLOADÉS PAR LES UTILISATEURS
+# ========================================
+static/uploads/
+uploads/
+media/
+
+# ========================================
+# IDE ET ÉDITEURS
+# ========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# ========================================
+# SYSTÈME D'EXPLOITATION
+# ========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ========================================
+# LOGS DE L'APPLICATION
+# ========================================
+*.log
+logs/
+log/
+
+# ========================================
+# FICHIERS TEMPORAIRES ET DIVERS
+# ========================================
+*.tmp
+*.bak
+*.cache
+*.orig
+.cache/
+celerybeat-schedule
+celerybeat.pid
+
+# ========================================
+# TESTS ET COUVERTURE
+# ========================================
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# ========================================
+# DOCKER (si utilisé)
+# ========================================
+docker-compose.override.yml
+.docker/
+
+# ========================================
+# FICHIERS SENSIBLES DIVERS
+# ========================================
+*.pem
+*.key
+*.crt
+credentials.json
+service_account.json

@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Accorder une Aide - Mutuelle Solidaire{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg">
+                <div class="card-header bg-danger text-white py-3">
+                    <h4 class="mb-0">
+                        <i class="fas fa-hand-holding-heart"></i> Accorder une Aide Sociale
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                   
+                        {{ form.hidden_tag() }}
+                        <div class="mb-3">
+                            <label for="membre_id" class="form-label fw-bold">
+                                <i class="fas fa-user"></i> Bénéficiaire *
+                            </label>
+                            {{ form.membre_id(class="form-select") }}
+                            {% for error in form.membre_id.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="type_aide" class="form-label fw-bold">
+                                <i class="fas fa-tag"></i> Type d'Aide *
+                            </label>
+                            {{ form.type_aide(class="form-select") }}
+                            {% for error in form.type_aide.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="montant" class="form-label fw-bold">
+                                <i class="fas fa-euro-sign"></i> Montant Accordé (FCFA) *
+                            </label>
+                            {{ form.montant(class="form-control", placeholder="0.00", step="0.01") }}
+                            {% for error in form.montant.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+                            <small class="text-danger">
+                                <i class="fas fa-exclamation-triangle"></i> 
+                                Vérifiez le solde de la caisse avant de valider
+                            </small>
+                        </div>
+                         <div class="mb-3">
+                            <label for="date_attribution" class="form-label">Date de l'aide</label>
+                            <input type="date" class="form-control" id="date_attribution" name="date_attribution" required>
+                         </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label fw-bold">
+                                <i class="fas fa-align-left"></i> Motif Détaillé *
+                            </label>
+                            {{ form.description(class="form-control", rows="4", placeholder="Décrivez la situation et le besoin...") }}
+                            {% for error in form.description.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+                        </div>
+
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Attention :</strong> Cette action diminuera le solde de la caisse. 
+                            Un email de notification sera envoyé au bénéficiaire.
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="confirmAide" required>
+                            <label class="form-check-label" for="confirmAide">
+                                Je confirme avoir vérifié le solde de la caisse et l'éligibilité du membre
+                            </label>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-danger btn-lg") }}
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Retour au Tableau de Bord
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Infos Rapides -->
+            <div class="card mt-4 bg-light">
+                <div class="card-body">
+                    <h6 class="fw-bold"><i class="fas fa-lightbulb text-warning"></i> Cas d'Assistance</h6>
+                    <ul class="mb-0 small text-muted">
+                        <li><strong>Mariage :</strong> Aide financière pour célébration</li>
+                        <li><strong>Obsèques :</strong> Soutien en cas de décès</li>
+                        <li><strong>Maladie :</strong> Assistance maladie longue durée</li>
+                        <li><strong>Autre :</strong> Cas particuliers à examiner</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

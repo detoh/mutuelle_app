@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion des Membres - Mutuelle Solidaire{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="mb-2"><i class="fas fa-users"></i> Gestion des Membres</h1>
+                <p class="mb-0 opacity-75">Liste complète des membres de la mutuelle</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a href="{{ url_for('importer_membres') }}" class="btn btn-outline-light me-2">
+                    <i class="fas fa-file-import"></i> Importer
+                </a>
+                <a href="{{ url_for('ajouter_membre') }}" class="btn btn-light">
+                    <i class="fas fa-user-plus"></i> Nouveau Membre
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-4">
+    <!-- Filtres -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" class="form-control" id="searchMember" placeholder="🔍 Rechercher...">
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="filterStatut">
+                        <option value="">Tous les statuts</option>
+                        <option value="Actif">Actif</option>
+                        <option value="Suspendu">Suspendu</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="filterRole">
+                        <option value="">Tous les rôles</option>
+                        <option value="admin">Administrateur</option>
+                        <option value="comptable">Comptable</option>
+                        <option value="member">Membre</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100" onclick="filterTable()">
+                        <i class="fas fa-filter"></i> Filtrer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tableau -->
+    <div class="card">
+        <div class="card-header bg-white py-3">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="fas fa-list text-primary"></i>
+                        <span id="memberCount">{{ membres|length }}</span> Membre(s)
+                        <small class="text-muted fw-normal">(page courante)</small>
+                    </h5>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <span class="text-muted">
+                        Page {{ page }} sur {{ total_pages }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0" id="membersTable">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="py-3">ID</th>
+                            <th class="py-3">Photo</th>
+                            <th class="py-3">Nom & Prénom</th>
+                            <th class="py-3">Service</th>
+                            <th class="py-3">Emploi</th>
+                            <th class="py-3">Fonction</th>
+                            <th class="py-3">Email</th>
+                            <th class="py-3">Date Adhésion</th>
+                            <th class="py-3">Statut</th>
+                            <th class="py-3">Rôle</th>
+                            <th class="py-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for membre in membres %}
+                        <tr data-statut="{{ membre.statut }}" 
+                            data-role="{{ 'admin' if membre.is_admin else ('comptable' if membre.is_comptable else 'member') }}">
+                            <td class="py-3">#{{ membre.id }}</td>
+                            <td class="py-3">
+                                {% if membre.photo %}
+                                    <img src="{{ url_for('static', filename=membre.photo) }}" 
+                                         class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                                {% else %}
+                                    <i class="fas fa-user-circle text-secondary fa-lg"></i>
+                                {% endif %}
+                            </td>
+                            <td class="py-3 fw-bold">{{ membre.nom }} {{ membre.prenom }}</td>
+                            <td class="py-3">{{ membre.service or '-' }}</td>
+                            <td class="py-3">{{ membre.emploi or '-' }}</td>
+                            <td class="py-3">{{ membre.fonction or '-' }}</td>
+                            <td class="py-3">{{ membre.email }}</td>
+                            <td class="py-3">{{ membre.date_adhesion or '-' }}</td>
+                            <td class="py-3">
+                                {% if membre.statut == 'Actif' %}
+                                    <span class="badge bg-success">Actif</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Suspendu</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3">
+                                {% if membre.is_admin %}
+                                    <span class="badge bg-primary">Admin</span>
+                                {% endif %}
+                                {% if membre.is_comptable %}
+                                    <span class="badge bg-info text-dark">Comptable</span>
+                                {% endif %}
+                                {% if not membre.is_admin and not membre.is_comptable %}
+                                    <span class="badge bg-secondary">Membre</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3">
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{{ url_for('detail_membre', id=membre.id) }}" 
+                                       class="btn btn-outline-info" title="Voir">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ url_for('modifier_membre', id=membre.id) }}" 
+                                       class="btn btn-outline-warning" title="Modifier">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{ url_for('changer_statut_membre', id=membre.id) }}" 
+                                          method="POST" style="display: inline;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <button type="submit" class="btn btn-outline-{{ 'danger' if membre.statut == 'Actif' else 'success' }}">
+                                            <i class="fas fa-{{ 'pause' if membre.statut == 'Actif' else 'play' }}"></i>
+                                        </button>
+                                    </form>
+                                    <form action="{{ url_for('supprimer_membre', id=membre.id) }}" 
+                                          method="POST" style="display: inline;"
+                                          onsubmit="return confirm('Êtes-vous sûr ?');">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <button type="submit" class="btn btn-outline-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="11" class="text-center py-5 text-muted">
+                                <i class="fas fa-users-slash fa-3x mb-3"></i>
+                                <p>Aucun membre enregistré</p>
+                                <a href="{{ url_for('ajouter_membre') }}" class="btn btn-primary">
+                                    <i class="fas fa-user-plus"></i> Ajouter un membre
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        <tr id="noFilterResultRow" style="display:none;">
+                            <td colspan="11" class="text-center py-5 text-muted">
+                                <i class="fas fa-search fa-2x mb-3 d-block"></i>
+                                <p class="mb-0">Aucun résultat sur cette page pour ces critères.</p>
+                                <small>La recherche ne porte que sur les {{ membres|length }} membres affichés (page {{ page }} sur {{ total_pages }}). Changez de page pour chercher ailleurs.</small>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        {% if total_pages > 1 %}
+        <div class="card-footer bg-white">
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    <li class="page-item {{ 'disabled' if page == 1 }}">
+                        <a class="page-link" href="{{ url_for('liste_membres', page=page-1) }}">
+                            <i class="fas fa-chevron-left"></i> Précédent
+                        </a>
+                    </li>
+                    {% for p in range(1, total_pages + 1) %}
+                        {% if p == 1 or p == total_pages or (p >= page-2 and p <= page+2) %}
+                        <li class="page-item {{ 'active' if p == page }}">
+                            <a class="page-link" href="{{ url_for('liste_membres', page=p) }}">{{ p }}</a>
+                        </li>
+                        {% elif p == page-3 or p == page+3 %}
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                    {% endfor %}
+                    <li class="page-item {{ 'disabled' if page == total_pages }}">
+                        <a class="page-link" href="{{ url_for('liste_membres', page=page+1) }}">
+                            Suivant <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput   = document.getElementById('searchMember');
+    const statutSelect  = document.getElementById('filterStatut');
+    const roleSelect    = document.getElementById('filterRole');
+
+    if (searchInput)  searchInput.addEventListener('keyup', filterTable);
+    if (statutSelect) statutSelect.addEventListener('change', filterTable);
+    if (roleSelect)   roleSelect.addEventListener('change', filterTable);
+});
+
+function filterTable() {
+    const searchValue   = document.getElementById('searchMember').value.toLowerCase();
+    const statutFilter  = document.getElementById('filterStatut').value;
+    const roleFilter    = document.getElementById('filterRole').value;
+    const noResultRow   = document.getElementById('noFilterResultRow');
+
+    // On ne touche qu'aux vraies lignes de données (pas la ligne "aucun résultat")
+    const rows = document.querySelectorAll('#membersTable tbody tr:not(#noFilterResultRow)');
+
+    let visibleCount = 0;
+
+    rows.forEach(row => {
+        const rowStatut = row.dataset.statut || '';
+        const rowRole   = row.dataset.role   || '';
+        const rowText   = row.textContent.toLowerCase();
+
+        const searchMatch = rowText.includes(searchValue);
+        const statutMatch = !statutFilter || rowStatut === statutFilter;
+        const roleMatch   = !roleFilter   || rowRole   === roleFilter;
+
+        const isVisible = searchMatch && statutMatch && roleMatch;
+        row.style.display = isVisible ? '' : 'none';
+        if (isVisible) visibleCount++;
+    });
+
+    const countEl = document.getElementById('memberCount');
+    if (countEl) countEl.textContent = visibleCount;
+
+    if (noResultRow) {
+        noResultRow.style.display = (rows.length > 0 && visibleCount === 0) ? '' : 'none';
+    }
+}
+</script>
+{% endblock %}

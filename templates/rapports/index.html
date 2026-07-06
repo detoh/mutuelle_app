@@ -1,0 +1,566 @@
+{% extends "base.html" %}
+
+{% block title %}Rapports Financiers - Mutuelle Solidaire{% endblock %}
+
+{% block extra_css %}
+<style>
+    .report-card {
+        border-radius: 15px;
+        transition: all 0.3s ease;
+    }
+    .report-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    .chart-container {
+        position: relative;
+        height: 300px;
+    }
+    .year-selector {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 10px;
+        padding: 20px;
+        color: white;
+    }
+    .export-btn {
+        min-width: 120px;
+    }
+    .summary-box {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        border-left: 4px solid;
+    }
+    .summary-box.income { border-left-color: #27ae60; }
+    .summary-box.expense { border-left-color: #e74c3c; }
+    .summary-box.balance { border-left-color: #3498db; }
+    .summary-box.members { border-left-color: #f39c12; }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- En-tête de page -->
+<div class="page-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="mb-2">
+                    <i class="fas fa-file-invoice-dollar"></i> Rapports Financiers
+                </h1>
+                <p class="mb-0 opacity-75">Analyse détaillée des finances de la mutuelle</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <div class="btn-group">
+                    <a href="{{ url_for('export_rapport_pdf', annee=annee_selectionnee) }}" class="btn btn-light">
+                        <i class="fas fa-file-pdf"></i> PDF
+                    </a>
+                    <a href="{{ url_for('export_rapport_excel', annee=annee_selectionnee) }}" class="btn btn-light">
+                        <i class="fas fa-file-excel"></i> Excel
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-4">
+    <!-- Sélecteur d'Année -->
+    <div class="year-selector mb-4">
+        <form method="GET" action="{{ url_for('rapports') }}" class="row align-items-center">
+            <div class="col-md-4">
+                <label for="annee" class="form-label mb-1">
+                    <i class="fas fa-calendar-alt"></i> Sélectionner l'année
+                </label>
+                <select name="annee" id="annee" class="form-select" onchange="this.form.submit()">
+                    {% for year in years_list %}
+                        <option value="{{ year }}" {% if year == annee_selectionnee %}selected{% endif %}>
+                            {{ year }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <div class="mt-4">
+                    <strong><i class="fas fa-clock"></i> Période :</strong> 
+                    01/01/{{ annee_selectionnee }} - 31/12/{{ annee_selectionnee }}
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <button type="button" class="btn btn-light" onclick="window.print()">
+                    <i class="fas fa-print"></i> Imprimer
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Résumé Financier Annuel -->
+    <h4 class="mb-3 fw-bold">
+        <i class="fas fa-chart-line text-primary"></i> Vue d'ensemble {{ annee_selectionnee }}
+    </h4>
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="summary-box income">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Total Recettes</p>
+                        <h3 class="mb-0 fw-bold text-success">{{ "%.2f"|format(total_recettes) }} FCFA</h3>
+                    </div>
+                    <i class="fas fa-arrow-down fa-2x text-success opacity-50"></i>
+                </div>
+                <small class="text-muted">
+                    <i class="fas fa-trend-up"></i> 
+                    {% if pourcentage_evolution_recettes > 0 %}
+                        +{{ pourcentage_evolution_recettes }}% vs {{ annee_selectionnee|int - 1 }}
+                    {% else %}
+                        {{ pourcentage_evolution_recettes }}% vs {{ annee_selectionnee|int - 1 }}
+                    {% endif %}
+                </small>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="summary-box expense">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Total Dépenses</p>
+                        <h3 class="mb-0 fw-bold text-danger">{{ "%.2f"|format(total_depenses) }} FCFA</h3>
+                    </div>
+                    <i class="fas fa-arrow-up fa-2x text-danger opacity-50"></i>
+                </div>
+                <small class="text-muted">
+                    <i class="fas fa-trend-down"></i> 
+                    {% if pourcentage_evolution_depenses > 0 %}
+                        +{{ pourcentage_evolution_depenses }}% vs {{ annee_selectionnee|int - 1 }}
+                    {% else %}
+                        {{ pourcentage_evolution_depenses }}% vs {{ annee_selectionnee|int - 1 }}
+                    {% endif %}
+                </small>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="summary-box balance">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Solde Annuel</p>
+                        <h3 class="mb-0 fw-bold text-primary">{{ "%.2f"|format(solde_annuel) }} FCFA</h3>
+                    </div>
+                    <i class="fas fa-wallet fa-2x text-primary opacity-50"></i>
+                </div>
+                <small class="text-muted">
+                    <i class="fas fa-check-circle"></i> 
+                    {% if solde_annuel >= 0 %}
+                        Excédent
+                    {% else %}
+                        Déficit
+                    {% endif %}
+                </small>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="summary-box members">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Membres Actifs</p>
+                        <h3 class="mb-0 fw-bold text-warning">{{ nb_membres_actifs }}</h3>
+                    </div>
+                    <i class="fas fa-users fa-2x text-warning opacity-50"></i>
+                </div>
+                <small class="text-muted">
+                    <i class="fas fa-user-plus"></i> 
+                    +{{ nb_nouveaux_membres }} nouveaux cette année
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Graphiques -->
+    <div class="row g-4 mb-5">
+        <!-- Évolution Mensuelle -->
+        <div class="col-lg-8">
+            <div class="card report-card h-100">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="fas fa-chart-area text-primary"></i> 
+                        Évolution Mensuelle des Entrées et Dépenses
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Répartition par Catégorie -->
+        <div class="col-lg-4">
+            <div class="card report-card h-100">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="fas fa-chart-pie text-success"></i> 
+                        Répartition des Rentrées
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="recettesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Répartition des Dépenses -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-4">
+            <div class="card report-card h-100">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="fas fa-chart-pie text-danger"></i> 
+                        Répartition des Dépenses
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="depensesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top 5 Membres (Cotisations) -->
+        <div class="col-lg-8">
+            <div class="card report-card h-100">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="fas fa-trophy text-warning"></i> 
+                        Top 5 Membres - Plus Fortes Cotisations
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="py-3">Rang</th>
+                                    <th class="py-3">Membre</th>
+                                    <th class="py-3">Total Cotisé</th>
+                                    <th class="py-3">Nombre de Paiements</th>
+                                    <th class="py-3">Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for membre in top_membres_cotisants %}
+                                <tr>
+                                    <td class="py-3">
+                                        {% if loop.index == 1 %}
+                                            <i class="fas fa-medal text-warning fa-lg"></i>
+                                        {% elif loop.index == 2 %}
+                                            <i class="fas fa-medal text-secondary fa-lg"></i>
+                                        {% elif loop.index == 3 %}
+                                            <i class="fas fa-medal" style="color: #cd7f32;"></i>
+                                        {% else %}
+                                            <span class="text-muted">{{ loop.index }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="py-3 fw-bold">{{ membre.nom_complet }}</td>
+                                    <td class="py-3 text-success fw-bold">{{ "%.2f"|format(membre.total_cotise) }} FCFA</td>
+                                    <td class="py-3">{{ membre.nb_paiements }}</td>
+                                    <td class="py-3">
+                                        <span class="badge bg-success">Actif</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tableau Détaillé Mensuel -->
+    <div class="card report-card mb-5">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold">
+                <i class="fas fa-table text-info"></i> 
+                Détail Mensuel {{ annee_selectionnee }}
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0" id="monthlyTable">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="py-3">Mois</th>
+                            <th class="py-3"> Total Cotisations</th>
+                            <th class="py-3">Total Dons</th>
+                            <th class="py-3">Total Entrées(Cotisation+Dons)</th>
+                            <th class="py-3">Aides Versées</th>
+                            <th class="py-3">Événements</th>
+                            <th class="py-3">Total Dépenses(Aides+Evenements) </th>
+                            <th class="py-3">Solde Mensuel</th>
+                            <th class="py-3">Solde Cumulé</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mois in details_mensuels %}
+                        <tr>
+                            <td class="py-3 fw-bold">{{ mois.nom }}</td>
+                            <td class="py-3 text-success">{{ "%.2f"|format(mois.cotisations) }} FCFA</td>
+                            <td class="py-3 text-success">{{ "%.2f"|format(mois.dons) }} FCFA</td>
+                            <td class="py-3 fw-bold text-success">{{ "%.2f"|format(mois.total_recettes) }} FCFA</td>
+                            <td class="py-3 text-danger">{{ "%.2f"|format(mois.aides) }} FCFA</td>
+                            <td class="py-3 text-danger">{{ "%.2f"|format(mois.evenements) }} FCFA</td>
+                            <td class="py-3 fw-bold text-danger">{{ "%.2f"|format(mois.total_depenses) }} FCFA</td>
+                            <td class="py-3">
+                                {% if mois.solde_mensuel >= 0 %}
+                                    <span class="text-success fw-bold">+{{ "%.2f"|format(mois.solde_mensuel) }} FCFA</span>
+                                {% else %}
+                                    <span class="text-danger fw-bold">{{ "%.2f"|format(mois.solde_mensuel) }} FCFA</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3 fw-bold">
+                                {% if mois.solde_cumule >= 0 %}
+                                    <span class="text-primary">{{ "%.2f"|format(mois.solde_cumule) }} FCFA</span>
+                                {% else %}
+                                    <span class="text-danger">{{ "%.2f"|format(mois.solde_cumule) }} FCFA</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="bg-light fw-bold">
+                        <tr>
+                            <td class="py-3">TOTAL {{ annee_selectionnee }}</td>
+                            <td class="py-3 text-success">{{ "%.2f"|format(total_cotisations_annee) }} FCFA</td>
+                            <td class="py-3 text-success">{{ "%.2f"|format(total_dons_annee) }} FCFA</td>
+                            <td class="py-3 text-success">{{ "%.2f"|format(total_recettes) }} FCFA</td>
+                            <td class="py-3 text-danger">{{ "%.2f"|format(total_aides_annee) }} FCFA</td>
+                            <td class="py-3 text-danger">{{ "%.2f"|format(total_events_annee) }} FCFA</td>
+                            <td class="py-3 text-danger">{{ "%.2f"|format(total_depenses) }} FCFA</td>
+                            <td class="py-3">
+                                {% if solde_annuel >= 0 %}
+                                    <span class="text-success">+{{ "%.2f"|format(solde_annuel) }} FCFA</span>
+                                {% else %}
+                                    <span class="text-danger">{{ "%.2f"|format(solde_annuel) }} FCFA</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3 text-primary">{{ "%.2f"|format(solde_cumule_final) }} FCFA</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alertes et Recommandations -->
+    <div class="card report-card mb-5">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold">
+                <i class="fas fa-lightbulb text-warning"></i> 
+                Analyse et Recommandations
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if solde_annuel < 0 %}
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Attention :</strong> La mutuelle présente un déficit de {{ "%.2f"|format(solde_annuel|abs) }} FCFA 
+                pour l'année {{ annee_selectionnee }}. Il est recommandé de :
+                <ul class="mb-0 mt-2">
+                    <li>Réviser le montant des cotisations</li>
+                    <li>Limiter les aides exceptionnelles</li>
+                    <li>Organiser des événements de collecte de fonds</li>
+                </ul>
+            </div>
+            {% elif solde_annuel < total_recettes * 0.1 %}
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-circle"></i>
+                <strong>Prudence :</strong> Le solde est positif mais faible ({{ "%.2f"|format(solde_annuel) }} FCFA). 
+                Constituez une réserve de sécurité équivalente à 3 mois de dépenses.
+            </div>
+            {% else %}
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                <strong>Excellente santé financière !</strong> 
+                La mutuelle dispose d'un excédent de {{ "%.2f"|format(solde_annuel) }} FCFA. 
+                Vous pouvez envisager :
+                <ul class="mb-0 mt-2">
+                    <li>Augmenter les plafonds d'aides</li>
+                    <li>Investir dans des projets pour les membres</li>
+                    <li>Constituer un fonds de réserve</li>
+                </ul>
+            </div>
+            {% endif %}
+
+            {% if taux_aides > 0.5 %}
+            <div class="alert alert-info mt-3">
+                <i class="fas fa-info-circle"></i>
+                <strong>Observation :</strong> Les aides représentent {{ "%.1f"|format(taux_aides * 100) }}% des dépenses totales. 
+                Ce taux est dans la norme pour une mutuelle solidaire.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Boutons d'Action -->
+    <div class="text-center mb-5">
+        <div class="btn-group">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+                <i class="fas fa-tachometer-alt"></i> Retour au Tableau de Bord
+            </a>
+            <a href="{{ url_for('export_rapport_pdf', annee=annee_selectionnee) }}" class="btn btn-danger">
+                <i class="fas fa-file-pdf"></i> Exporter PDF
+            </a>
+            <a href="{{ url_for('export_rapport_excel', annee=annee_selectionnee) }}" class="btn btn-success">
+                <i class="fas fa-file-excel"></i> Exporter Excel
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Graphique Évolution Mensuelle
+    const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+    const monthlyChart = new Chart(monthlyCtx, {
+        type: 'line',
+        data: {
+            labels: [{% for mois in details_mensuels %}'{{ mois.nom }}'{% if not loop.last %}, {% endif %}{% endfor %}],
+            datasets: [{
+                label: 'Recettes',
+                data: [{% for mois in details_mensuels %}{{ mois.total_recettes }}{% if not loop.last %}, {% endif %}{% endfor %}],
+                borderColor: 'rgba(39, 174, 96, 1)',
+                backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'Dépenses',
+                data: [{% for mois in details_mensuels %}{{ mois.total_depenses }}{% if not loop.last %}, {% endif %}{% endfor %}],
+                borderColor: 'rgba(231, 76, 60, 1)',
+                backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + ' FCFA';
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return value + ' FCFA';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Graphique Répartition Recettes
+    const recettesCtx = document.getElementById('recettesChart').getContext('2d');
+    const recettesChart = new Chart(recettesCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Cotisations', 'Dons', 'Adhésions'],
+            datasets: [{
+                data: [
+                    {{ total_cotisations_annee }},
+                    {{ total_dons_annee }},
+                    {{ total_adhesions_annee }}
+                ],
+                backgroundColor: [
+                    'rgba(52, 152, 219, 0.8)',
+                    'rgba(39, 174, 96, 0.8)',
+                    'rgba(155, 89, 182, 0.8)'
+                ],
+                borderColor: [
+                    'rgba(52, 152, 219, 1)',
+                    'rgba(39, 174, 96, 1)',
+                    'rgba(155, 89, 182, 1)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.label || '';
+                            if (label) label += ': ';
+                            label += context.parsed.toFixed(2) + ' FCFA';
+                            return label;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Graphique Repartition Depenses
+    const depensesCtx = document.getElementById('depensesChart').getContext('2d');
+    const depensesChart = new Chart(depensesCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Aides aux membres', 'Evenements'],
+            datasets: [{
+                data: [
+                    {{ total_aides_annee }},
+                    {{ total_events_annee }}
+                ],
+                backgroundColor: [
+                    'rgba(231, 76, 60, 0.8)',
+                    'rgba(243, 156, 18, 0.8)'
+                ],
+                borderColor: [
+                    'rgba(231, 76, 60, 1)',
+                    'rgba(243, 156, 18, 1)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.label || '';
+                            if (label) label += ': ';
+                            label += context.parsed.toFixed(0) + ' FCFA';
+                            return label;
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

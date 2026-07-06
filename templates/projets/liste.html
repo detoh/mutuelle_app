@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion des Projets - Mutuelle Solidaire{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="mb-2"><i class="fas fa-project-diagram"></i> Gestion des Projets</h1>
+                <p class="mb-0 opacity-75">Suivez les projets de la mutuelle</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a href="{{ url_for('ajouter_projet') }}" class="btn btn-light">
+                    <i class="fas fa-plus"></i> Nouveau Projet
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-4">
+    <!-- Statistiques -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card bg-primary text-white h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-folder fa-2x mb-2"></i>
+                    <h3 class="mb-1">{{ projets|length }}</h3>
+                    <p class="mb-0">Projets Totaux</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card bg-success text-white h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-check-circle fa-2x mb-2"></i>
+                    <h3 class="mb-1">{{ projets|selectattr('statut', 'equalto', 'Terminé')|list|length }}</h3>
+                    <p class="mb-0">Projets Terminés</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card bg-warning text-dark h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-spinner fa-2x mb-2"></i>
+                    <h3 class="mb-1">{{ projets|selectattr('statut', 'equalto', 'En cours')|list|length }}</h3>
+                    <p class="mb-0">En Cours</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card bg-info text-white h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-coins fa-2x mb-2"></i>
+                    <h3 class="mb-1">{{ "%.2f"|format(projets|sum(attribute='coutexecution')) }} €</h3>
+                    <p class="mb-0">Coût Total</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tableau des Projets -->
+    <div class="card">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold"><i class="fas fa-list text-primary"></i> Liste des Projets</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="py-3">Titre Projet</th>
+                            <th class="py-3">Date Début</th>
+                            <th class="py-3">Date Fin</th>
+                            <th class="py-3">Coût</th>
+                            <th class="py-3">Donateur</th>
+                            <th class="py-3">Statut</th>
+                            <th class="py-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for projet in projets %}
+                        <tr>
+                            <td class="py-3 fw-bold">{{ projet.titreprojet }}</td>
+                            <td class="py-3">{{ projet.datedebut.strftime('%d/%m/%Y') if projet.datedebut else '-' }}</td>
+                            <td class="py-3">{{ projet.datefiprojet.strftime('%d/%m/%Y') if projet.datefiprojet else '-' }}</td>
+                            <td class="py-3">{{ "%.2f"|format(projet.coutexecution) }} FCFA</td>
+                            <td class="py-3">{{ projet.nomdonateur or '-' }}</td>
+                            <td class="py-3">
+                                {% if projet.statut == 'En cours' %}
+                                    <span class="badge bg-warning text-dark">En cours</span>
+                                {% elif projet.statut == 'Terminé' %}
+                                    <span class="badge bg-success">Terminé</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Annulé</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3">
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{{ url_for('modifier_projet', id=projet.idprojet) }}" 
+                                       class="btn btn-outline-warning" title="Modifier">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{ url_for('supprimer_projet', id=projet.idprojet) }}" 
+                                          method="POST" style="display: inline;"
+                                          onsubmit="return confirm('Supprimer ce projet ?');">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <button type="submit" class="btn btn-outline-danger" title="Supprimer">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <i class="fas fa-folder-open fa-3x mb-3"></i>
+                                <p>Aucun projet enregistré</p>
+                                <a href="{{ url_for('ajouter_projet') }}" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Ajouter un projet
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

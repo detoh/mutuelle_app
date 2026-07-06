@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5" style="max-width: 480px;">
+  <h2>Changement de mot de passe obligatoire</h2>
+  <p class="text-muted">Pour des raisons de sécurité, vous devez choisir un nouveau mot de passe avant de continuer.</p>
+
+  <form method="POST">
+    {{ form.hidden_tag() }}
+
+    <div class="mb-3">
+      {{ form.nouveau_mot_de_passe.label(class="form-label") }}
+      {{ form.nouveau_mot_de_passe(class="form-control") }}
+      {% for erreur in form.nouveau_mot_de_passe.errors %}
+        <small class="text-danger">{{ erreur }}</small>
+      {% endfor %}
+    </div>
+
+    <div class="mb-3">
+      {{ form.confirmation.label(class="form-label") }}
+      {{ form.confirmation(class="form-control") }}
+      {% for erreur in form.confirmation.errors %}
+        <small class="text-danger">{{ erreur }}</small>
+      {% endfor %}
+    </div>
+
+    {{ form.submit(class="btn btn-primary w-100") }}
+  </form>
+</div>
+{% endblock %}

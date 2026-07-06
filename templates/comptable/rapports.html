@@ -1,0 +1,441 @@
+{% extends "base.html" %}
+
+{% block title %}Rapports Financiers - Espace Comptable{% endblock %}
+
+{% block content %}
+
+<!-- En-tête -->
+<div class="page-header bg-primary text-white py-4 mb-4">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="mb-1"><i class="fas fa-file-invoice-dollar"></i> Rapports Financiers</h1>
+                <p class="mb-0 opacity-75">Bilan financier pour l'année {{ annee }}</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <!-- Sélecteur d'année -->
+                <form method="GET" class="d-inline-flex align-items-center gap-2">
+                    <label class="text-white fw-semibold mb-0">Année :</label>
+                    <select name="annee" class="form-select form-select-sm" style="width:auto;"
+                        onchange="this.form.submit()">
+                        {% for y in range(annee + 2, annee - 5, -1) %}
+                        <option value="{{ y }}" {% if y == annee %}selected{% endif %}>{{ y }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+                <button class="btn btn-light btn-sm mt-2" onclick="window.print()">
+                    <i class="fas fa-print"></i> Imprimer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- ── Cartes KPI ──────────────────────────────────────────────── -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card h-100 border-success shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-2"><i class="fas fa-coins fa-2x text-success opacity-50"></i></div>
+                    <h6 class="card-title text-muted">Total Cotisations</h6>
+                    <h3 class="text-success fw-bold">{{ "%.2f"|format(total_cotisations) }} FCFA</h3>
+                    <small class="text-muted">{{ cotisations_par_membre | sum(attribute='nb_paiements') }} paiement(s)</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 border-info shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-2"><i class="fas fa-gift fa-2x text-info opacity-50"></i></div>
+                    <h6 class="card-title text-muted">Total Dons</h6>
+                    <h3 class="text-info fw-bold">{{ "%.2f"|format(total_dons) }} FCFA</h3>
+                    <small class="text-muted">{{ dons|length }} don(s)</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 border-danger shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-2"><i class="fas fa-hand-holding-heart fa-2x text-danger opacity-50"></i></div>
+                    <h6 class="card-title text-muted">Total Assistances Aides</h6>
+                    <h3 class="text-danger fw-bold">{{ "%.2f"|format(total_aides) }} FCFA</h3>
+                    <small class="text-muted">{{ aides_assistances_par_membre|length }} membre(s) bénéficiaire(s)</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 {{ 'border-primary' if solde_annee >= 0 else 'border-warning' }} shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-2">
+                        <i class="fas fa-balance-scale fa-2x {{ 'text-primary' if solde_annee >= 0 else 'text-warning' }} opacity-50"></i>
+                    </div>
+                    <h6 class="card-title text-muted">Solde Net {{ annee }}</h6>
+                    <h3 class="{{ 'text-primary' if solde_annee >= 0 else 'text-warning' }} fw-bold">
+                        {{ "%.2f"|format(solde_annee) }} FCFA
+                    </h3>
+                    <small class="text-muted">Entrées - Sorties</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Tableau récapitulatif ───────────────────────────────────── -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold"><i class="fas fa-table text-secondary"></i> Récapitulatif des flux {{ annee }}</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="py-3">Liste des Catégories </th>
+                        <th class="py-3 text-end">Montant (FCFA)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><i class="fas fa-plus-circle text-success me-2"></i>Cotisations encaissées</td>
+                        <td class="text-end text-success fw-bold">+ {{ "%.2f"|format(total_cotisations) }} FCFA</td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-plus-circle text-info me-2"></i>Dons reçus</td>
+                        <td class="text-end text-info fw-bold">+ {{ "%.2f"|format(total_dons) }} FCFA</td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-minus-circle text-danger me-2"></i>Assistances (Aides versées)</td>
+                        <td class="text-end text-danger fw-bold">- {{ "%.2f"|format(total_aides) }} FCFA</td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-minus-circle text-secondary me-2"></i>Événements (dépenses)</td>
+                        <td class="text-end text-secondary fw-bold">- {{ "%.2f"|format(total_evenements) }} FCFA</td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-minus-circle text-secondary me-2"></i>Projets (dépenses)</td>
+                        <td class="text-end text-secondary fw-bold">- {{ "%.2f"|format(total_projets) }} FCFA</td>
+                    </tr>
+                    <tr class="table-active">
+                        <td class="fw-bold fs-6">SOLDE DE FIN D'ANNÉE {{ annee }}</td>
+                        <td class="text-end fw-bold fs-6 {{ 'text-primary' if solde_annee >= 0 else 'text-danger' }}">
+                            = {{ "%.2f"|format(solde_annee) }} FCFA
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── Comparaison Annuelle ─────────────────────────────────────── -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold"><i class="fas fa-chart-line text-secondary"></i> Comparaison {{ annee }} vs {{ annee - 1 }}</h5>
+        </div>
+        <div class="card-body p-0">
+            {% if comparaison %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="py-3">Liste des Catégories</th>
+                            <th class="py-3 text-end">{{ annee }}</th>
+                            <th class="py-3 text-end">{{ annee - 1 }}</th>
+                            <th class="py-3 text-end">Variation</th>
+                            <th class="py-3 text-end">Variation %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in comparaison %}
+                        <tr>
+                            <td class="py-2 fw-semibold">{{ c.categorie }}</td>
+                            <td class="py-2 text-end">{{ "%.2f"|format(c.montant_annee) }} FCFA</td>
+                            <td class="py-2 text-end text-muted">{{ "%.2f"|format(c.montant_annee_prec) }} FCFA</td>
+                            <td class="py-2 text-end {{ 'text-success' if c.variation >= 0 else 'text-danger' }}">
+                                {{ '+' if c.variation >= 0 }}{{ "%.2f"|format(c.variation) }} FCFA
+                            </td>
+                            <td class="py-2 text-end fw-bold {{ 'text-success' if c.variation_pct >= 0 else 'text-danger' }}">
+                                {{ '+' if c.variation_pct >= 0 }}{{ "%.1f"|format(c.variation_pct) }}%
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4 text-muted">
+                <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                Pas de données de comparaison disponibles
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ── Cotisations par Membre ──────────────────────────────────── -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-success text-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold"><i class="fas fa-coins"></i> Cotisations par Membre — {{ annee }}</h5>
+            <span class="badge bg-white text-success">{{ cotisations_par_membre|length }} membre(s)</span>
+        </div>
+        <div class="card-body p-0">
+            {% if cotisations_par_membre %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="py-3">Liste des Membres</th>
+                            <th class="py-3">Liste des Emails</th>
+                            <th class="py-3 text-center">Nb. paiements</th>
+                            <th class="py-3">Dernière cotisation</th>
+                            <th class="py-3 text-end">Total cotisé</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cm in cotisations_par_membre %}
+                        <tr>
+                            <td class="py-2 fw-semibold">{{ cm.nom_complet }}</td>
+                            <td class="py-2 text-muted">{{ cm.email }}</td>
+                            <td class="py-2 text-center">
+                                {% if cm.nb_paiements > 0 %}
+                                    <span class="badge bg-success-subtle text-success">{{ cm.nb_paiements }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary-subtle text-secondary">0</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-2">{{ cm.derniere_cotisation.strftime('%d/%m/%Y') if cm.derniere_cotisation else '—' }}</td>
+                            <td class="py-2 text-end fw-semibold {{ 'text-success' if cm.total_cotise > 0 else 'text-muted' }}">
+                                {{ "%.2f"|format(cm.total_cotise) }} FCFA
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="bg-light">
+                        <tr>
+                            <td colspan="4" class="fw-bold text-end">Total</td>
+                            <td class="fw-bold text-end text-success">{{ "%.2f"|format(total_cotisations) }} FCFA</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4 text-muted">
+                <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                Aucun membre actif trouvé pour {{ annee }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ── Top 10 Cotisants ─────────────────────────────────────────── -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-warning text-dark py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold"><i class="fas fa-trophy"></i> Top 10 Cotisants — {{ annee }}</h5>
+            <span class="badge bg-white text-dark">{{ top_cotisants|length }} membre(s)</span>
+        </div>
+        <div class="card-body p-0">
+            {% if top_cotisants %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="py-3">Rang</th>
+                            <th class="py-3">Liste des Membres</th>
+                            <th class="py-3">Email Membres</th>
+                            <th class="py-3 text-center">Nb. paiements</th>
+                            <th class="py-3">Dernière cotisation</th>
+                            <th class="py-3 text-end">Total cotisé</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tc in top_cotisants %}
+                        <tr>
+                            <td class="py-2">
+                                {% if loop.index == 1 %}
+                                    <i class="fas fa-medal text-warning fa-lg"></i>
+                                {% elif loop.index == 2 %}
+                                    <i class="fas fa-medal text-secondary fa-lg"></i>
+                                {% elif loop.index == 3 %}
+                                    <i class="fas fa-medal" style="color: #cd7f32;"></i>
+                                {% else %}
+                                    <span class="text-muted">{{ loop.index }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-2 fw-semibold">{{ tc.nom_complet }}</td>
+                            <td class="py-2 text-muted">{{ tc.email }}</td>
+                            <td class="py-2 text-center">
+                                <span class="badge bg-warning-subtle text-warning">{{ tc.nb_paiements }}</span>
+                            </td>
+                            <td class="py-2">{{ tc.derniere_cotisation.strftime('%d/%m/%Y') if tc.derniere_cotisation else '—' }}</td>
+                            <td class="py-2 text-end fw-bold text-success">{{ "%.2f"|format(tc.total_cotise) }} FCFA</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4 text-muted">
+                <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                Aucun cotisant trouvé pour {{ annee }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ── Détail Dons ─────────────────────────────────────────────── -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-info text-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold"><i class="fas fa-gift"></i> Détail des Dons</h5>
+            <span class="badge bg-white text-info">{{ dons|length }} enregistrement(s)</span>
+        </div>
+        <div class="card-body p-0">
+            {% if dons %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="py-3">Liste Donateur</th>
+                            <th class="py-3">Date Donation</th>
+                            <th class="py-3">Statut</th>
+                            <th class="py-3 text-end">Montant</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for d in dons %}
+                        <tr>
+                            <td class="py-2">{{ d.donateur_nom or 'Anonyme' }}</td>
+                            <td class="py-2">{{ d.date.strftime('%d/%m/%Y') if d.date else '—' }}</td>
+                            <td class="py-2">
+                                <span class="badge bg-{{ 'success' if d.statut else 'warning' }}">
+                                    {{ 'Reçu' if d.statut else 'En attente' }}
+                                </span>
+                            </td>
+                            <td class="py-2 text-end fw-semibold text-info">{{ "%.2f"|format(d.montant) }} FCFA</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="bg-light">
+                        <tr>
+                            <td colspan="3" class="fw-bold text-end">Total</td>
+                            <td class="fw-bold text-end text-info">{{ "%.2f"|format(total_dons) }} FCFA</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4 text-muted">
+                <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                Aucun don enregistré pour {{ annee }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ── Aides & Assistances par Membre ──────────────────────────── -->
+    <div class="card shadow-sm mb-5">
+        <div class="card-header bg-danger text-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold"><i class="fas fa-hand-holding-heart"></i> Aides & Assistances par Membre — {{ annee }}</h5>
+            <span class="badge bg-white text-danger">{{ aides_assistances_par_membre|length }} membre(s)</span>
+        </div>
+        <div class="card-body p-0">
+            {% if aides_assistances_par_membre %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="py-3">Bénéficiaire</th>
+                            <th class="py-3">Email</th>
+                            <th class="py-3 text-center">Aides validées</th>
+                            <th class="py-3 text-center">Assistances versées</th>
+                            <th class="py-3">Dernier versement</th>
+                            <th class="py-3 text-end">Total combiné</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for am in aides_assistances_par_membre %}
+                        <tr>
+                            <td class="py-2 fw-semibold">{{ am.nom_complet }}</td>
+                            <td class="py-2 text-muted">{{ am.email }}</td>
+                            <td class="py-2 text-center">
+                                {% if am.nb_aides > 0 %}
+                                    <span class="badge bg-danger-subtle text-danger">{{ am.nb_aides }}</span>
+                                    <div class="small text-muted">{{ "%.2f"|format(am.total_aides) }} FCFA</div>
+                                {% else %}
+                                    <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-2 text-center">
+                                {% if am.nb_assistances > 0 %}
+                                    <span class="badge bg-warning-subtle text-warning">{{ am.nb_assistances }}</span>
+                                    <div class="small text-muted">{{ "%.2f"|format(am.total_assistances) }} FCFA</div>
+                                {% else %}
+                                    <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-2">{{ am.derniere_date.strftime('%d/%m/%Y') if am.derniere_date else '—' }}</td>
+                            <td class="py-2 text-end fw-semibold text-danger">{{ "%.2f"|format(am.total_combine) }} FCFA</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="bg-light">
+                        <tr>
+                            <td colspan="5" class="fw-bold text-end">Total</td>
+                            <td class="fw-bold text-end text-danger">{{ "%.2f"|format(total_aides) }} FCFA </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4 text-muted">
+                <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                Aucune aide ou assistance versée pour {{ annee }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ── Historique des Bilans Archivés ──────────────────────────── -->
+    <div class="card shadow-sm mb-5">
+        <div class="card-header bg-secondary text-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold"><i class="fas fa-archive"></i> Historique des Bilans Archivés (Clôturés)</h5>
+            <span class="badge bg-white text-secondary">{{ bilans_archives|length }} exercice(s)</span>
+        </div>
+        <div class="card-body p-0">
+            {% if bilans_archives %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="py-3">Année</th>
+                            <th class="py-3 text-end">Total Entrées</th>
+                            <th class="py-3 text-end">Total Sorties</th>
+                            <th class="py-3 text-end">Solde Net</th>
+                            <th class="py-3">Clôturé le</th>
+                            <th class="py-3">Clos par</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for b in bilans_archives %}
+                        <tr>
+                            <td class="py-2 fw-bold">{{ b.annee }}</td>
+                            <td class="py-2 text-end text-success">{{ "%.2f"|format(b.total_entrees) }} FCFA</td>
+                            <td class="py-2 text-end text-danger">{{ "%.2f"|format(b.total_sorties) }} FCFA</td>
+                            <td class="py-2 text-end fw-bold {{ 'text-primary' if b.solde_net >= 0 else 'text-danger' }}">
+                                {{ "%.2f"|format(b.solde_net) }} FCFA
+                            </td>
+                            <td class="py-2">{{ b.date_cloture.strftime('%d/%m/%Y') if b.date_cloture else '—' }}</td>
+                            <td class="py-2 text-muted">{{ b.clos_par or '—' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4 text-muted">
+                <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                Aucun exercice clôturé pour le moment
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

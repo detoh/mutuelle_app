@@ -1,0 +1,21 @@
+{% extends "emails/base.html" %}
+
+{% block content %}
+<h2>Aide Accordée ❤️</h2>
+
+<p>Bonjour {{ membre.prenom }} {{ membre.nom }},</p>
+
+<p>Nous avons le plaisir de vous informer qu'une aide a été accordée.</p>
+
+<div class="info-box" style="border-left-color: #27ae60;">
+    <h3>Détails de l'aide :</h3>
+    <p><strong>Type :</strong> {{ aide.type_aide }}</p>
+    <p><strong>Montant :</strong> {{ "%.2f"|format(aide.montant) }} €</p>
+    <p><strong>Date :</strong> {{ aide.date_attribution.strftime('%d/%m/%Y') }}</p>
+    <p><strong>Motif :</strong> {{ aide.description }}</p>
+</div>
+
+<p>Le versement sera effectué sous 48h.</p>
+
+<p>Cordialement,<br>La Mutuelle Solidaire</p>
+{% endblock %}

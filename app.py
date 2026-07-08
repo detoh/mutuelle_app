@@ -29,7 +29,7 @@ from models import (db, Membre, Cotisation, Aide, Evenement, Don, Projet,
                     get_aides_assistances_par_membre, get_etat_cotisations_membres,
                     cloturer_exercice, rafraichir_dashboard)
 
-from forms import (LoginForm, ChangerMotDePasseForm, RegisterForm, CotisationForm, AideForm, 
+from forms import (LoginForm, ChangerMotDePasseForm, ContactForm, CotisationForm, AideForm, 
                    EvenementForm, ProjetForm, AjoutMembreFamilleForm, DeclarationEvenementForm,ParametresMutuelleForm)
 
 # ─── INITIALISATION ──────────────────────────────────────────────────────────
@@ -317,34 +317,38 @@ def logout():
     flash('Vous avez été déconnecté.', 'info')
     return redirect(url_for('login'))
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if current_user.is_authenticated:
-        if current_user.is_admin or current_user.is_comptable:
-            return redirect(url_for('dashboard'))
-        return redirect(url_for('mon_compte'))
-    form = RegisterForm()
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    form = ContactForm()
     if form.validate_on_submit():
-        try:
-            from werkzeug.security import generate_password_hash
-            pw_hash = generate_password_hash(form.password.data)
-            is_first = Membre.query.count() == 0
-            Membre.creer(
-                nom=form.nom.data, prenom=form.prenom.data, email=form.email.data,
-                telephone=form.telephone.data or '', fonction=form.fonction.data or '',
-                service=form.service.data or '', emploi=form.emploi.data or '',
-                date_adhesion=datetime.now().strftime('%Y-%m-%d'),
-                password_hash=pw_hash, is_admin=is_first
-            )
-            flash('Compte créé avec succès ! Connectez-vous.', 'success')
-            return redirect(url_for('login'))
-        except Exception as e:
-            if 'EMAIL_DEJA_UTILISE' in str(e):
-                flash('Cet email est déjà utilisé.', 'danger')
-            else:
-                flash(f'Erreur lors de la création du compte : {e}', 'danger')
-    return render_template('auth/register.html', form=form)
+        admins = Membre.query.filter_by(is_admin=True).all()
+        emails_admins = [a.email for a in admins if a.email]
 
+        sujet = f"[Contact site] {form.sujet.data}"
+        corps = f"""Nouveau message reçu via le formulaire de contact du site.
+
+    Nom : {form.nom.data}
+    Email : {form.email.data}
+    Téléphone : {form.telephone.data or 'Non renseigné'}
+
+Message :
+{form.message.data}
+"""
+        erreurs_envoi = 0
+        for email_admin in emails_admins:
+            try:
+                envoyer_notification_email(email_admin, sujet, corps)
+            except Exception as e:
+                current_app.logger.error(f"Erreur envoi contact à {email_admin}: {e}")
+                erreurs_envoi += 1
+
+        if emails_admins and erreurs_envoi < len(emails_admins):
+            flash('Votre message a bien été envoyé. Nous vous répondrons rapidement.', 'success')
+        else:
+            flash("Votre message n'a pas pu être envoyé pour le moment. Veuillez réessayer plus tard.", 'danger')
+        return redirect(url_for('contact'))
+
+    return render_template('contact.html', form=form)
 
 # ═════════════════════════════════════════════════════════════════════════════
 # ROUTES — DASHBOARD

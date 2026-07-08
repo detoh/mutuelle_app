@@ -164,71 +164,63 @@
                                 <i class="fas fa-sign-out-alt"></i> Déconnexion
                             </a>
                         </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('login') }}">
-                                <i class="fas fa-sign-in-alt"></i> Connexion
+
+                        {% if current_user.is_admin or current_user.is_comptable %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="comptableDropdown"
+                               role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-calculator"></i> Comptabilité
                             </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('dashboard_comptable') }}">
+                                        <i class="fas fa-tachometer-alt"></i> Tableau de Bord
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('transactions_comptable') }}">
+                                        <i class="fas fa-list"></i> Transactions
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('rapports_comptable') }}">
+                                        <i class="fas fa-file-invoice"></i> Rapports
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('etat_cotisations') }}">
+                                        <i class="fas fa-file-invoice"></i> Etat_Cotisations
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('liste_aides') }}">
+                                        <i class="fas fa-file-invoice"></i> Aides Accordées
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('liste_membres') }}">
+                                        <i class="fas fa-users"></i> Membres
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('membres_en_retard') }}">
+                                        <i class="fas fa-hourglass-start"></i> Membres en retard
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('cloture_exercice') }}">
+                                        <i class="fa-regular fa-calendar-check"></i> Clôture exercice
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('register') }}">
-                                <i class="fas fa-user-plus"></i> Inscription
-                            </a>
-                        </li>
+                        {% endif %}
+
                     {% endif %}
                 </ul>
             </div>
         </div>
-    <!-- Dans base.html, menu de navigation -->
-
-        {% if current_user.is_admin or current_user.is_comptable %}
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle decalage-compta" style="transform: translateX(-20px); "href="#" id="comptableDropdown" 
-            role="button" data-bs-toggle="dropdown">
-                <i class="fas fa-calculator"></i> Comptabilité
-            </a>
-            <ul class="dropdown-menu">
-                <li>
-                    <a class="dropdown-item" href="{{ url_for('dashboard_comptable') }}">
-                        <i class="fas fa-tachometer-alt"></i> Tableau de Bord
-                    </a>
-                </li>
-                <li>
-                    <a class="dropdown-item" href="{{ url_for('transactions_comptable') }}">
-                        <i class="fas fa-list"></i> Transactions
-                    </a>
-                </li>
-                <li>
-                    <a class="dropdown-item" href="{{ url_for('rapports_comptable') }}">
-                        <i class="fas fa-file-invoice"></i> Rapports
-                    </a>
-                </li>
-                <li>
-                    <a class="dropdown-item" href="{{ url_for('etat_cotisations') }}">
-                        <i class="fas fa-file-invoice"></i> Etat_Cotisations
-                    </a>
-                </li>
-                <li>
-                    <a class="dropdown-item" href="{{ url_for('liste_aides') }}">
-                        <i class="fas fa-file-invoice"></i>Aides Accordéess
-                    </a>
-                </li>
-                <li><hr class="dropdown-divider"></li>
-                <li>
-                    <a class="dropdown-item" href="{{ url_for('liste_membres') }}">
-                        <i class="fas fa-users"></i> Membres
-                    </a>
-                    <a class="dropdown-item" href="{{ url_for('membres_en_retard') }}">
-                        <i class="fas fa-hourglass-start"></i>Membres en retard
-                    </a>
-                       
-                    <a class="dropdown-item" href="{{ url_for('cloture_exercice') }}">
-                        <i class="fa-regular fa-calendar-check"></i>Clôture exercice
-                    </a>
-                </li>
-            </ul>
-        </li>
-        {% endif %}    
     </nav>
 
     <!-- Messages Flash -->

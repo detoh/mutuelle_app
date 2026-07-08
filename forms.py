@@ -130,3 +130,11 @@ class ParametresMutuelleForm(FlaskForm):
         validators=[DataRequired(), NumberRange(min=0)]
     )
     submit = SubmitField('Enregistrer') 
+
+class ContactForm(FlaskForm):
+    nom = StringField('Nom complet', validators=[DataRequired(), Length(max=100)])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    telephone = StringField('Téléphone', validators=[Optional(), Length(max=20)])
+    sujet = StringField('Sujet', validators=[DataRequired(), Length(max=150)])
+    message = TextAreaField('Message', validators=[DataRequired(), Length(max=2000)])
+    ssubmit = SubmitField('Envoyer')    

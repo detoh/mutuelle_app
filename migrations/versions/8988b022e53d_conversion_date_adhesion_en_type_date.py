@@ -15,18 +15,17 @@ depends_on = None
 
 
 def upgrade():
-    # Conversion directe de date_adhesion en type DATE
+    # Remplace ton ancien op.execute par celui-ci :
     op.execute("""
         ALTER TABLE membres
         ALTER COLUMN date_adhesion TYPE DATE
         USING (
             CASE
-                WHEN date_adhesion LIKE '%/%' THEN TO_DATE(date_adhesion, 'DD/MM/YYYY')
-                ELSE date_adhesion::DATE
+                WHEN date_adhesion::text LIKE '%/%' THEN TO_DATE(date_adhesion::text, 'DD/MM/YYYY')
+                ELSE date_adhesion::text::DATE
             END
         )
     """)
-
 
 def downgrade():
     # Retour en type VARCHAR(50)

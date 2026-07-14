@@ -3,8 +3,10 @@ import os
 import io
 import uuid
 import pandas as pd
+from io import BytesIO
 from utils.notifications import send_welcome_email
 from werkzeug.security import generate_password_hash
+from werkzeug.utils import secure_filename
 import secrets as secrets_module
 from dotenv import load_dotenv
 load_dotenv()
@@ -29,7 +31,7 @@ from models import (db, Membre, Cotisation, Aide, Evenement, Don, Projet,
                     get_aides_assistances_par_membre, get_etat_cotisations_membres,
                     cloturer_exercice, rafraichir_dashboard)
 
-from forms import (LoginForm, ChangerMotDePasseForm, ContactForm, CotisationForm, AideForm, 
+from forms import (LoginForm, ChangerMotDePasseForm, ContactForm, CotisationForm, AideForm,RegisterForm,
                    EvenementForm, ProjetForm, AjoutMembreFamilleForm, DeclarationEvenementForm,ParametresMutuelleForm)
 
 # ─── INITIALISATION ──────────────────────────────────────────────────────────
@@ -449,15 +451,47 @@ def mon_compte():
 @admin_required
 def liste_membres():
     page = request.args.get('page', 1, type=int)
-    per_page = 15
-    pagination = Membre.query.order_by(Membre.id).paginate(
-        page=page, per_page=per_page, error_out=False
+    per_page = 25
+    recherche = request.args.get('recherche', '', type=str).strip()
+    filtre_statut = request.args.get('statut', '', type=str)
+    filtre_role = request.args.get('role', '', type=str)
+
+    query = Membre.query
+
+    if recherche:
+        like = f"%{recherche}%"
+        query = query.filter(
+            db.or_(
+                Membre.nom.ilike(like),
+                Membre.prenom.ilike(like),
+                Membre.email.ilike(like),
+                db.func.concat(Membre.nom, ' ', Membre.prenom).ilike(like),
+                db.func.concat(Membre.prenom, ' ', Membre.nom).ilike(like),
+            )
+        )
+
+    if filtre_statut:
+        query = query.filter(Membre.statut == filtre_statut)
+
+    if filtre_role == 'admin':
+        query = query.filter(Membre.is_admin == True)
+    elif filtre_role == 'comptable':
+        query = query.filter(Membre.is_comptable == True)
+    elif filtre_role == 'member':
+        query = query.filter(Membre.is_admin == False, Membre.is_comptable == False)
+
+    pagination = query.order_by(Membre.id).paginate(page=page, per_page=per_page, error_out=False)
+
+    return render_template(
+        'members/liste.html',
+        membres=pagination.items,
+        page=page,
+        total_pages=pagination.pages or 1,
+        total_membres=pagination.total,
+        recherche=recherche,
+        filtre_statut=filtre_statut,
+        filtre_role=filtre_role
     )
-    membres = pagination.items
-    return render_template('members/liste.html',
-                          membres=membres,
-                          page=page,
-                          total_pages=pagination.pages or 1)
 
 # ═════════════════════════════════════════════════════════════════════════════
 # IMPORT DE MEMBRES EN MASSE (Excel/CSV)
@@ -1130,14 +1164,14 @@ def dashboard_comptable():
 @comptable_required
 def transactions_comptable():
     page    = request.args.get('page', 1, type=int)
-    per_page = 15
+    per_page = 25
     all_transactions  = get_recent_transactions(limit=500)
     start, end        = (page - 1) * per_page, page * per_page
     transactions_page = all_transactions[start:end]
     total_pages       = (len(all_transactions) + per_page - 1) // per_page
     return render_template('comptable/transactions.html',
                          transactions=transactions_page, page=page, total_pages=total_pages)
-Cotisation
+
 @app.route('/comptable/valider-cotisation/<int:id>', methods=['POST'])
 @login_required
 @comptable_required
@@ -1472,7 +1506,7 @@ def export_etat_cotisations_pdf():
     elements.append(Spacer(1, 0.5*cm))
 
     # En-têtes dynamiques selon la fréquence
-    entetes = ['Membre', 'Adhésion'] + [f'Éch. {i}' for i in range(1, nb_echeances + 1)] + ['Payé', 'Attendu', 'Solde', 'Statut']
+    entetes = ['Membre', 'Adhésion'] + [f'Trim. {i}' for i in range(1, nb_echeances + 1)] + ['Payé', 'Attendu', 'Solde', 'Statut']
     data = [entetes]
 
     for m in etat:
@@ -1711,12 +1745,22 @@ def init_db():
     with app.app_context():
         db.create_all()
         if Membre.query.count() == 0:
-            admin = Membre(nom="Admin", prenom="Principal", email="admin@mutuelle.com", is_admin=True)
-            admin.set_password("admin123")
+            import secrets as secrets_module
+            mot_de_passe_genere = secrets_module.token_urlsafe(12)
+
+            admin = Membre(
+                nom="Admin",
+                prenom="Principal",
+                email="admin@mutuelle.com",
+                is_admin=True,
+                doit_changer_mot_de_passe=True
+            )
+            admin.set_password(mot_de_passe_genere)
             db.session.add(admin)
             db.session.commit()
-            print("[OK] Admin créé : admin@mutuelle.com / admin123")
-
+            print(f"[OK] Admin créé : admin@mutuelle.com / {mot_de_passe_genere}")
+            print("[IMPORTANT] Notez ce mot de passe maintenant, il ne sera plus jamais affiché.")
+            
 # Route /api/traiter-assistance supprimée — utiliser valider_assistance et refuser_assistance
 
 @app.route('/admin/assistances')
@@ -1938,6 +1982,142 @@ def export_rapport_pdf():
     doc.build(elements)
     buffer.seek(0)
     return send_file(buffer, as_attachment=True, download_name=f'rapport_financier_{annee}.pdf', mimetype='application/pdf')
+
+@app.route('/cotisations/importer', methods=['GET', 'POST'])
+@login_required
+@comptable_required
+def importer_cotisations():
+    if request.method == 'GET':
+        return render_template('finance/importer_cotisations.html')
+
+    fichier = request.files.get('fichier_import')
+    if not fichier or not fichier.filename:
+        flash('[ATTENTION] Veuillez sélectionner un fichier.', 'danger')
+        return redirect(url_for('importer_cotisations'))
+
+    extension = fichier.filename.rsplit('.', 1)[-1].lower()
+    if extension not in ('xlsx', 'xls', 'csv'):
+        flash('[ATTENTION] Formats acceptés : .xlsx, .xls, .csv', 'danger')
+        return redirect(url_for('importer_cotisations'))
+
+    try:
+        if extension == 'csv':
+            df = pd.read_csv(fichier, dtype=str, keep_default_na=False)
+        else:
+            df = pd.read_excel(fichier, dtype=str, keep_default_na=False)
+    except Exception as e:
+        flash(f'[ERREUR] Fichier illisible : {e}', 'danger')
+        return redirect(url_for('importer_cotisations'))
+
+    df.columns = [str(c).strip().lower() for c in df.columns]
+
+    colonnes_obligatoires = ['email', 'montant', 'date_paiement']
+    colonnes_manquantes = [c for c in colonnes_obligatoires if c not in df.columns]
+    if colonnes_manquantes:
+        flash(
+            f"[ERREUR] Colonnes obligatoires manquantes : {', '.join(colonnes_manquantes)}. "
+            f"Téléchargez le modèle pour le bon format.",
+            'danger'
+        )
+        return redirect(url_for('importer_cotisations'))
+
+    STATUTS_VALIDES = ('en_attente', 'Paye')
+    lignes_ok = []
+    lignes_erreur = []
+
+    for idx, row in df.iterrows():
+        numero_ligne = idx + 2
+
+        email = str(row.get('email', '')).strip().lower()
+        if not email:
+            lignes_erreur.append((numero_ligne, "email manquant"))
+            continue
+
+        membre = Membre.query.filter_by(email=email).first()
+        if not membre:
+            lignes_erreur.append((numero_ligne, f"aucun membre trouvé avec l'email : {email}"))
+            continue
+
+        montant_brut = str(row.get('montant', '')).strip().replace(',', '.')
+        try:
+            montant = float(montant_brut)
+            if montant <= 0:
+                raise ValueError
+        except ValueError:
+            lignes_erreur.append((numero_ligne, f"montant invalide : {montant_brut}"))
+            continue
+
+        date_brute = str(row.get('date_paiement', '')).strip().split(' ')[0]
+        date_paiement = None
+        for fmt in ('%Y-%m-%d', '%d/%m/%Y', '%d-%m-%Y', '%Y/%m/%d'):
+            try:
+                date_paiement = datetime.strptime(date_brute, fmt)
+                break
+            except ValueError:
+                continue
+        if not date_paiement:
+            lignes_erreur.append((numero_ligne, f"date_paiement illisible ({date_brute}), format attendu AAAA-MM-JJ"))
+            continue
+
+        type_cotisation = str(row.get('type_cotisation', '')).strip() or 'Mensuelle'
+
+        statut_brut = str(row.get('statut', '')).strip()
+        statut = statut_brut if statut_brut in STATUTS_VALIDES else 'en_attente'
+
+        mode_paiement = str(row.get('mode_paiement', '')).strip() or None
+        reference_transaction = str(row.get('reference_transaction', '')).strip() or None
+
+        try:
+            cotisation = Cotisation(
+                membre_id=membre.id,
+                type_cotisation=type_cotisation,
+                montant=montant,
+                date_paiement=date_paiement,
+                statut=statut,
+                mode_paiement=mode_paiement,
+                reference_transaction=reference_transaction
+            )
+            db.session.add(cotisation)
+            db.session.commit()
+            lignes_ok.append((numero_ligne, email, montant, date_paiement.strftime('%d/%m/%Y')))
+        except Exception as e:
+            db.session.rollback()
+            lignes_erreur.append((numero_ligne, f"erreur enregistrement : {e}"))
+
+    if lignes_ok:
+        flash(f"[OK] {len(lignes_ok)} cotisation(s) importée(s) avec succès.", 'success')
+    if lignes_erreur:
+        flash(f"[ATTENTION] {len(lignes_erreur)} ligne(s) en erreur — voir le détail ci-dessous.", 'warning')
+
+    return render_template(
+        'finance/importer_cotisations.html',
+        lignes_ok=lignes_ok,
+        lignes_erreur=lignes_erreur,
+        termine=True
+    )
+
+
+@app.route('/cotisations/modele')
+@login_required
+@comptable_required
+def telecharger_modele_import_cotisations():
+    df = pd.DataFrame([{
+        'email': 'membre@exemple.com',
+        'montant': 5000,
+        'date_paiement': '2026-07-09',
+        'type_cotisation': 'Mensuelle',
+        'statut': 'en_attente',
+        'mode_paiement': 'Espèces',
+        'reference_transaction': ''
+    }])
+    buffer = BytesIO()
+    df.to_excel(buffer, index=False)
+    buffer.seek(0)
+    return send_file(
+        buffer, as_attachment=True,
+        download_name='modele_import_cotisations.xlsx',
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
 
 if __name__ == '__main__': 
     init_db()

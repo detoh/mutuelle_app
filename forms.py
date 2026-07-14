@@ -136,5 +136,6 @@ class ContactForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     telephone = StringField('Téléphone', validators=[Optional(), Length(max=20)])
     sujet = StringField('Sujet', validators=[DataRequired(), Length(max=150)])
-    message = TextAreaField('Message', validators=[DataRequired(), Length(max=2000)])
-    ssubmit = SubmitField('Envoyer')    
+    message = TextAreaField('Message', validators=[DataRequired(), Length(max=2000)]
+    )
+    submit = SubmitField('Envoyer')    

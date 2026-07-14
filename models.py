@@ -20,7 +20,7 @@ class Membre(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     ville = db.Column(db.String(200))
     password_hash = db.Column(db.String(200))
-    date_adhesion = db.Column(db.String(20), default='2026-01-01')
+    date_adhesion = db.Column(db.Date, nullable=True)
     statut = db.Column(db.String(20), default='Actif')
     is_admin = db.Column(db.Boolean, default=False)
     is_comptable = db.Column(db.Boolean, default=False)
@@ -30,7 +30,7 @@ class Membre(UserMixin, db.Model):
     emploi = db.Column(db.String(100))
     doit_changer_mot_de_passe = db.Column(db.Boolean, default=True, nullable=False) #vient d'etre ajouter
     cotisations = db.relationship('Cotisation', backref='membre', lazy=True)
-    aides_recues = db.relationship('Aide', backref='beneficiaire', lazy=True)
+    aides_recues = db.relationship('Aide', foreign_keys='Aide.membre_id', backref='beneficiaire', lazy=True)
 
     def set_password(self, p):
         self.password_hash = generate_password_hash(p)
@@ -165,6 +165,8 @@ class Cotisation(db.Model):
         # Garde uniquement les parties qui ne sont pas None ou vides
         return " ".join(part.strip() for part in parts if part).strip()
         
+
+        
 class Aide(db.Model):
     __tablename__ = 'aides'
     id = db.Column(db.Integer, primary_key=True)
@@ -174,28 +176,35 @@ class Aide(db.Model):
     date_attribution = db.Column(db.DateTime, default=datetime.utcnow)
     description = db.Column(db.Text)
     valide_par_admin = db.Column(db.Boolean, default=True)
+    valide_par_comptable = db.Column(db.Boolean, default=False)
+    valideur_id = db.Column(db.Integer, db.ForeignKey('membres.id'), nullable=True)
+
+    valideur = db.relationship('Membre', foreign_keys=[valideur_id])
 
     @staticmethod
-    def attribuer(membre_id, type_aide, montant, description, date_attribution=None):
-        # Si pas de date fournie, on prend la date actuelle
+    def attribuer(membre_id, type_aide, montant, description, date_attribution=None,
+                  valideur_id=None, valide_par_admin=True, valide_par_comptable=False):
         date_final = date_attribution or datetime.utcnow()
-        
+
         db.session.execute(text("""
-            CALL sp_attribuer_aide(:membre_id, :type_aide, :montant, :description, :date_attribution)
+            CALL sp_attribuer_aide(:membre_id, :type_aide, :montant, :description,
+                                   :date_attribution, :valideur_id, :valide_par_admin,
+                                   :valide_par_comptable)
         """), dict(
-            membre_id=membre_id, 
+            membre_id=membre_id,
             type_aide=type_aide,
-            montant=montant, 
+            montant=montant,
             description=description,
-            date_attribution=date_final
+            date_attribution=date_final,
+            valideur_id=valideur_id,
+            valide_par_admin=valide_par_admin,
+            valide_par_comptable=valide_par_comptable
         ))
         db.session.commit()
 
     def supprimer(self):
         db.session.execute(text("CALL sp_supprimer_aide(:id)"), {'id': self.id})
         db.session.commit()
-
-
 
 class Evenement(db.Model):
     __tablename__ = 'evenements'

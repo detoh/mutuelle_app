@@ -26,31 +26,37 @@
     <!-- Filtres -->
     <div class="card mb-4">
         <div class="card-body">
-            <div class="row g-3">
+            <form method="GET" class="row g-3">
+                <input type="hidden" name="page" value="1">
                 <div class="col-md-4">
-                    <input type="text" class="form-control" id="searchMember" placeholder="🔍 Rechercher...">
+                    <input type="text" name="recherche" class="form-control"
+                           placeholder="🔍 Rechercher (nom, prénom, email)..."
+                           value="{{ recherche or '' }}">
                 </div>
                 <div class="col-md-3">
-                    <select class="form-select" id="filterStatut">
-                        <option value="">Tous les statuts</option>
-                        <option value="Actif">Actif</option>
-                        <option value="Suspendu">Suspendu</option>
+                    <select class="form-select" name="statut">
+                        <option value="" {% if not filtre_statut %}selected{% endif %}>Tous les statuts</option>
+                        <option value="Actif" {% if filtre_statut == 'Actif' %}selected{% endif %}>Actif</option>
+                        <option value="Suspendu" {% if filtre_statut == 'Suspendu' %}selected{% endif %}>Suspendu</option>
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <select class="form-select" id="filterRole">
-                        <option value="">Tous les rôles</option>
-                        <option value="admin">Administrateur</option>
-                        <option value="comptable">Comptable</option>
-                        <option value="member">Membre</option>
+                    <select class="form-select" name="role">
+                        <option value="" {% if not filtre_role %}selected{% endif %}>Tous les rôles</option>
+                        <option value="admin" {% if filtre_role == 'admin' %}selected{% endif %}>Administrateur</option>
+                        <option value="comptable" {% if filtre_role == 'comptable' %}selected{% endif %}>Comptable</option>
+                        <option value="member" {% if filtre_role == 'member' %}selected{% endif %}>Membre</option>
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <button class="btn btn-primary w-100" onclick="filterTable()">
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary flex-fill">
                         <i class="fas fa-filter"></i> Filtrer
                     </button>
+                    <a href="{{ url_for('liste_membres') }}" class="btn btn-outline-secondary" title="Réinitialiser">
+                        <i class="fas fa-times"></i>
+                    </a>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 
@@ -61,8 +67,8 @@
                 <div class="col-md-6">
                     <h5 class="mb-0 fw-bold">
                         <i class="fas fa-list text-primary"></i>
-                        <span id="memberCount">{{ membres|length }}</span> Membre(s)
-                        <small class="text-muted fw-normal">(page courante)</small>
+                        {{ membres|length }} Membre(s) affiché(s)
+                        <small class="text-muted fw-normal">({{ total_membres }} au total)</small>
                     </h5>
                 </div>
                 <div class="col-md-6 text-md-end">
@@ -166,13 +172,6 @@
                             </td>
                         </tr>
                         {% endfor %}
-                        <tr id="noFilterResultRow" style="display:none;">
-                            <td colspan="11" class="text-center py-5 text-muted">
-                                <i class="fas fa-search fa-2x mb-3 d-block"></i>
-                                <p class="mb-0">Aucun résultat sur cette page pour ces critères.</p>
-                                <small>La recherche ne porte que sur les {{ membres|length }} membres affichés (page {{ page }} sur {{ total_pages }}). Changez de page pour chercher ailleurs.</small>
-                            </td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -184,21 +183,21 @@
             <nav>
                 <ul class="pagination justify-content-center mb-0">
                     <li class="page-item {{ 'disabled' if page == 1 }}">
-                        <a class="page-link" href="{{ url_for('liste_membres', page=page-1) }}">
+                        <a class="page-link" href="{{ url_for('liste_membres', page=page-1, recherche=recherche, statut=filtre_statut, role=filtre_role) }}">
                             <i class="fas fa-chevron-left"></i> Précédent
                         </a>
                     </li>
                     {% for p in range(1, total_pages + 1) %}
                         {% if p == 1 or p == total_pages or (p >= page-2 and p <= page+2) %}
                         <li class="page-item {{ 'active' if p == page }}">
-                            <a class="page-link" href="{{ url_for('liste_membres', page=p) }}">{{ p }}</a>
+                            <a class="page-link" href="{{ url_for('liste_membres', page=p, recherche=recherche, statut=filtre_statut, role=filtre_role) }}">{{ p }}</a>
                         </li>
                         {% elif p == page-3 or p == page+3 %}
                         <li class="page-item disabled"><span class="page-link">...</span></li>
                         {% endif %}
                     {% endfor %}
                     <li class="page-item {{ 'disabled' if page == total_pages }}">
-                        <a class="page-link" href="{{ url_for('liste_membres', page=page+1) }}">
+                        <a class="page-link" href="{{ url_for('liste_membres', page=page+1, recherche=recherche, statut=filtre_statut, role=filtre_role) }}">
                             Suivant <i class="fas fa-chevron-right"></i>
                         </a>
                     </li>
@@ -208,51 +207,4 @@
         {% endif %}
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput   = document.getElementById('searchMember');
-    const statutSelect  = document.getElementById('filterStatut');
-    const roleSelect    = document.getElementById('filterRole');
-
-    if (searchInput)  searchInput.addEventListener('keyup', filterTable);
-    if (statutSelect) statutSelect.addEventListener('change', filterTable);
-    if (roleSelect)   roleSelect.addEventListener('change', filterTable);
-});
-
-function filterTable() {
-    const searchValue   = document.getElementById('searchMember').value.toLowerCase();
-    const statutFilter  = document.getElementById('filterStatut').value;
-    const roleFilter    = document.getElementById('filterRole').value;
-    const noResultRow   = document.getElementById('noFilterResultRow');
-
-    // On ne touche qu'aux vraies lignes de données (pas la ligne "aucun résultat")
-    const rows = document.querySelectorAll('#membersTable tbody tr:not(#noFilterResultRow)');
-
-    let visibleCount = 0;
-
-    rows.forEach(row => {
-        const rowStatut = row.dataset.statut || '';
-        const rowRole   = row.dataset.role   || '';
-        const rowText   = row.textContent.toLowerCase();
-
-        const searchMatch = rowText.includes(searchValue);
-        const statutMatch = !statutFilter || rowStatut === statutFilter;
-        const roleMatch   = !roleFilter   || rowRole   === roleFilter;
-
-        const isVisible = searchMatch && statutMatch && roleMatch;
-        row.style.display = isVisible ? '' : 'none';
-        if (isVisible) visibleCount++;
-    });
-
-    const countEl = document.getElementById('memberCount');
-    if (countEl) countEl.textContent = visibleCount;
-
-    if (noResultRow) {
-        noResultRow.style.display = (rows.length > 0 && visibleCount === 0) ? '' : 'none';
-    }
-}
-</script>
 {% endblock %}

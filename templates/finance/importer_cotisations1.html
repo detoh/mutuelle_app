@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Importer des Cotisations - Mutuelle Solidaire{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Importer des Cotisations</h2>
+            <p class="text-muted mb-0">Importez plusieurs cotisations à partir d'un fichier CSV</p>
+        </div>
+        <a href="{{ url_for('importer_cotisations') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Retour
+        </a>
+    </div>
+
+    <!-- Messages flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category if category != 'message' else 'info' }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Instructions -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0"><i class="fas fa-info-circle"></i> Instructions</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Format du fichier CSV attendu :</strong></p>
+            <ul>
+                <li>Le fichier doit être au format CSV (séparateur: virgule)</li>
+                <li>Encodage: UTF-8</li>
+                <li>Première ligne: en-têtes des colonnes</li>
+            </ul>
+            
+            <p><strong>Colonnes obligatoires :</strong></p>
+            <ul>
+                <li><code>email</code> ou <code>membre_id</code> : Identifiant du membre</li>
+                <li><code>montant</code> : Montant de la cotisation (nombre)</li>
+                <li><code>date_paiement</code> : Date au format JJ/MM/AAAA ou AAAA-MM-JJ</li>
+            </ul>
+            
+            <p><strong>Colonnes optionnelles :</strong></p>
+            <ul>
+                <li><code>type_cotisation</code> : mensuelle, annuelle, exceptionnelle (défaut: mensuelle)</li>
+                <li><code>statut</code> : paye, en_attente, annule (défaut: paye)</li>
+                <li><code>annee</code> : Année de la cotisation (défaut: année actuelle)</li>
+                <li><code>mois</code> : Mois de la cotisation (défaut: mois actuel)</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Modèle de fichier -->
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0"><i class="fas fa-file-csv"></i> Modèle de fichier CSV</h5>
+        </div>
+        <div class="card-body">
+            <p>Téléchargez ce modèle et remplissez-le avec vos données :</p>
+            <pre class="bg-light p-3 border rounded">email,membre_id,montant,date_paiement,type_cotisation,statut,annee,mois
+jean.dupont@email.com,,5000,15/01/2026,mensuelle,paye,2026,1
+marie.lambert@email.com,,5000,15/01/2026,mensuelle,paye,2026,1
+,3,10000,20/01/2026,annuelle,paye,2026,1</pre>
+            <a href="#" class="btn btn-outline-primary" onclick="telechargerModele(); return false;">
+                <i class="fas fa-download"></i> Télécharger le modèle CSV
+            </a>
+        </div>
+    </div>
+
+    <!-- Formulaire d'upload -->
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-upload"></i> Importer le fichier</h5>
+        </div>
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="file" class="form-label">Sélectionnez votre fichier CSV</label>
+                    <input type="file" class="form-control" id="file" name="file" accept=".csv" required>
+                    <div class="form-text">
+                        Le fichier doit être au format CSV avec encodage UTF-8
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i> 
+                    <strong>Attention :</strong> Vérifiez bien votre fichier avant de l'importer. 
+                    Les doublons ne seront pas détectés automatiquement.
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-upload"></i> Importer les cotisations
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function telechargerModele() {
+    const csvContent = "email,membre_id,montant,date_paiement,type_cotisation,statut,annee,mois\n" +
+                       "jean.dupont@email.com,,5000,15/01/2026,mensuelle,paye,2026,1\n" +
+                       "marie.lambert@email.com,,5000,15/01/2026,mensuelle,paye,2026,1\n" +
+                       ",3,10000,20/01/2026,annuelle,paye,2026,1";
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'modele_cotisations.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+</script>
+{% endblock %}

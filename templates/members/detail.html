@@ -83,21 +83,21 @@
         <div class="col-md-4">
             <div class="stat-box income">
                 <i class="fas fa-coins"></i>
-                <h4 class="mb-1">{{ "%.2f"|format(total_cotise) }} €</h4>
+                <h4 class="mb-1">{{ "%.2f"|format(total_cotise) }} FCFA</h4>
                 <p class="text-muted mb-0">Total Cotisé</p>
             </div>
         </div>
         <div class="col-md-4">
             <div class="stat-box expense">
                 <i class="fas fa-hand-holding-heart"></i>
-                <h4 class="mb-1">{{ "%.2f"|format(total_aides) }} €</h4>
+                <h4 class="mb-1">{{ "%.2f"|format(total_aides) }} FCFA</h4>
                 <p class="text-muted mb-0">Aides Reçues</p>
             </div>
         </div>
         <div class="col-md-4">
             <div class="stat-box balance">
                 <i class="fas fa-wallet"></i>
-                <h4 class="mb-1">{{ "%.2f"|format(total_cotise - total_aides) }} €</h4>
+                <h4 class="mb-1">{{ "%.2f"|format(total_cotise - total_aides) }} FCFA</h4>
                 <p class="text-muted mb-0">Solde Personnel</p>
             </div>
         </div>
@@ -116,8 +116,7 @@
                 <table class="table table-hover mb-0">
                     <thead class="bg-light">
                         <tr>
-                            <th class="py-3">Type</th>
-                            <th class="py-3">Période</th>
+                            <th class="py-3">Type Cotisation</th>
                             <th class="py-3">Date Paiement</th>
                             <th class="py-3">Montant</th>
                             <th class="py-3">Statut</th>
@@ -133,12 +132,11 @@
                                 {% elif cot.type_cotisation == 'Mensuelle' %}
                                     <span class="badge bg-success">Mensuelle</span>
                                 {% else %}
-                                    <span class="badge bg-warning text-dark">Exceptionnelle</span>
+                                    <span class="badge bg-warning text-dark">Cotisation Trimestrielle</span>
                                 {% endif %}
                             </td>
-                            <td class="py-3">{{ cot.periode }}</td>
                             <td class="py-3">{{ membre.date_adhesion or '-' }}</td>
-                            <td class="py-3 fw-bold">{{ "%.2f"|format(cot.montant) }} €</td>
+                            <td class="py-3 fw-bold">{{ "%.2f"|format(cot.montant) }} FCFA</td>
                             <td class="py-3">
                                 <span class="badge bg-success">{{ cot.statut }}</span>
                             </td>
@@ -188,7 +186,7 @@
                                 <span class="badge bg-danger">{{ aide.type_aide }}</span>
                             </td>
                             <td class="py-3">{{ aide.date_attribution.strftime('%d/%m/%Y') if aide.date_attribution else '—' }}</td>
-                            <td class="py-3 fw-bold">{{ "%.2f"|format(aide.montant) }} €</td>
+                            <td class="py-3 fw-bold">{{ "%.2f"|format(aide.montant) }} FCFA</td>
                             <td class="py-3">{{ aide.description or '-' }}</td>
                         </tr>
                         {% endfor %}
